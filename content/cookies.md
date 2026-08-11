@@ -3,7 +3,7 @@ title: "Cookies"
 eyebrow: "Legal"
 lede: "Every cookie and every piece of device storage on both Sortie websites, what each one is for, and how to change your mind. This site sets none at all."
 description: "The complete cookie and device-storage inventory for sortie-ai.com and docs.sortie-ai.com, including what Google Analytics receives even when you decline."
-effective: "TO-CONFIRM"
+effective: "2026-08-11"
 toc: true
 ---
 

@@ -3,7 +3,7 @@ title: "Privacy"
 eyebrow: "Legal"
 lede: "What Sortie collects, what the websites collect, and what you can do about it. The short version: the software collects nothing, this site sets no cookies, and the documentation site runs analytics only if you say yes."
 description: "How Sortie handles personal data. The Sortie software sends no telemetry. sortie-ai.com sets no cookies and contacts no third parties. docs.sortie-ai.com uses Google Analytics only with consent."
-effective: "TO-CONFIRM"
+effective: "2026-08-11"
 toc: true
 ---
 
