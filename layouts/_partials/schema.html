@@ -1,7 +1,6 @@
 {{- $org := printf "%s#organization" site.BaseURL -}}
 {{- $web := printf "%s#website" site.BaseURL -}}
 {{- $app := printf "%s#software" site.BaseURL -}}
-{{- /* A logo, not the social card: Google's guidance wants a square raster. */ -}}
 {{- $logo := "/android-chrome-512x512.png" | absURL -}}
 {{- $graph := slice
   (dict

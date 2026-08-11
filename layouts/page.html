@@ -14,8 +14,7 @@
         {{- with .Params.effective }}
         <div>
           <dt>In effect since</dt>
-          {{- /* Raw unless it parses: time.Format errors out on a placeholder,
-                 and the owner sets this date at publication. */ -}}
+
           {{- if findRE `^\d{4}-\d{2}-\d{2}$` . }}
           <dd><time datetime="{{ . }}">{{ time.Format "2 January 2006" . }}</time></dd>
           {{- else }}
@@ -23,8 +22,7 @@
           {{- end }}
         </div>
         {{- end }}
-        {{- /* An uncommitted file has no git date, and Go's zero time renders
-               as "1 January 0001" — a wrong date on a legal page. */ -}}
+
         {{- if gt .Lastmod.Year 1 }}
         <div>
           <dt>Last updated</dt>
