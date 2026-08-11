@@ -26,10 +26,25 @@ const render = (size) =>
 
 mkdirSync("static", { recursive: true });
 
+// apple-touch-icon-precomposed.png is the same 180px render under a second
+// name, and is deliberately byte-identical rather than a variant. The suffix
+// once meant "do not apply the system gloss and rounding"; Apple's own note in
+// Configuring Web Applications reads "Safari on iOS 7 doesn't add effects to
+// icons. Older versions of Safari will not add effects for icon files named
+// with the -precomposed.png suffix" - so since iOS 7 there is no effect to
+// opt out of and the two names denote the same image.
+//
+// It is shipped because clients still ask for it. When a page declares no
+// apple-touch-icon link, the documented behaviour is to probe the root in the
+// order -<size>-precomposed, -<size>, -precomposed, plain; the docs host is
+// serving a 404 page that declares no icons, and that probe shows up there as
+// 27 requests a week that all fall through to the plain name. Serving the same
+// bytes at both names ends the extra round trip without changing a pixel.
 const png = {
   "static/favicon-16x16.png": 16,
   "static/favicon-32x32.png": 32,
   "static/apple-touch-icon.png": 180,
+  "static/apple-touch-icon-precomposed.png": 180,
   "static/android-chrome-192x192.png": 192,
   "static/android-chrome-512x512.png": 512,
 };
