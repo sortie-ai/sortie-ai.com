@@ -1,6 +1,3 @@
-{{- /* Inlined, not <img>: currentColor is what lets the BRAND token swap
-       recolour the mark. The wordmark is HTML text beside it, never in the
-       SVG. Geometry source and rules: CLAUDE.md. */ -}}
 {{- with resources.Get "img/logomark.svg" -}}
 {{- .Content | safeHTML -}}
 {{- end -}}

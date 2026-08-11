@@ -1,10 +1,3 @@
-{{- /* Generated, not static, so the sitemap URL stays bound to baseURL.
-       Requires enableRobotsTXT = true. Allowing AI crawlers is deliberate;
-       the policy and how to reverse it are in CLAUDE.md.
-
-       HAZARD, RFC 9309 §2.2.1: a crawler obeys exactly ONE group, the most
-       specific match, and ignores `*` entirely. A Disallow added to `*` alone
-       silently does nothing for all ten named crawlers below. */ -}}
 User-agent: *
 Allow: /
 Content-Signal: search=yes, ai-input=yes, ai-train=yes

@@ -1,7 +1,3 @@
-{{- /* Driven by data/install.yaml. tabindex="0" belongs on the <pre>, which
-       is the actual scroller — the panel is overflow:hidden, so a tab stop
-       there scrolls nothing. Chromium makes the <pre> focusable by itself, but
-       that is a browser behaviour, not a guarantee. */ -}}
 <div class="install">
   <div class="tabs" role="tablist" aria-label="Install method">
     {{- range $i, $t := hugo.Data.install.tabs }}

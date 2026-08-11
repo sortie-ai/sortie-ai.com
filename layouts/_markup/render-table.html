@@ -1,10 +1,3 @@
-{{- /* Since Hugo 0.146 render hooks live in layouts/_markup/. At the old
-       _default/_markup/ path the hook never fires, Goldmark's default table is
-       emitted, and nothing errors — check the built HTML, not the log.
-
-       tabindex="0" on the wrapper: a box that scrolls by mouse but not by
-       keyboard fails WCAG 2.1.1. Deliberately NOT role="region", which would
-       demand an accessible name these tables get from the prose above. */ -}}
 <div class="table-wrap" tabindex="0">
   <table
     {{- range $k, $v := .Attributes }}

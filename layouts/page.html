@@ -1,13 +1,5 @@
-{{- /* Prose pages (/privacy/, /cookies/). Hugo >= 0.146 resolves a regular
-       page to layouts/page.html; _default/single.html no longer matches
-       anything and renders the bare baseof block with no error. */ -}}
 {{ define "main" }}
-{{- /* Ship guard: "[TO CONFIRM: …]" marks a fact only the owner can supply.
-       warnf, not errorf — unmissable in the log without making the site
-       unbuildable for unrelated work. */ -}}
-{{- range findRE `\[TO CONFIRM: [^\]]*` .RawContent }}
-  {{- warnf "%s: unresolved placeholder — %s]" $.File.Path (substr . 0 90) }}
-{{- end }}
+
 <article class="prose-page">
   <div class="wrap">
 
@@ -18,9 +10,6 @@
       <p class="lede">{{ . }}</p>
       {{- end }}
 
-      {{- /* Two dates: when the commitments started binding, and when the file
-             last changed. .Lastmod comes from the git author date, so a shallow
-             clone yields none — package.json runs `git fetch --unshallow`. */ -}}
       <dl class="prose-dates">
         {{- with .Params.effective }}
         <div>
@@ -45,14 +34,6 @@
       </dl>
     </header>
 
-    {{- /* .Fragments.Headings, not .TableOfContents: the latter emits its own
-           <nav id="TableOfContents">, nesting an unnamed landmark inside this
-           named one.
-
-           The tree is rooted at h1, and these pages set their h1 in the
-           template, so the root is a synthetic node with an empty ID. Render it
-           and you get <a href="#"></a> — WCAG H30, flagged by html-validate.
-           Promote past the root when it is that placeholder. */ -}}
     {{- $tops := .Fragments.Headings }}
     {{- if and (eq (len $tops) 1) (not (index $tops 0).ID) }}
       {{- $tops = (index $tops 0).Headings }}

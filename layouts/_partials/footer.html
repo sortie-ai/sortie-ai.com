@@ -42,18 +42,6 @@
     </div>
 
     <div class="legal">
-      <a class="ilink" href="{{ site.Params.github }}/blob/main/LICENSE">Apache License 2.0</a>
-      <span class="sep" aria-hidden="true">·</span>
-      {{- /* /releases/latest, never a pinned tag: /releases/tag/v1.18.0 returns
-             HTTP 200 with no notes and no assets, so a status-code link checker
-             cannot tell it from a real release. Full note in CLAUDE.md. */ -}}
-      <a class="ilink" href="{{ site.Params.github }}/releases/latest">Latest release {{ site.Params.version }}</a>
-      <span class="sep" aria-hidden="true">·</span>
-      <a class="ilink" href="{{ site.Params.github }}/blob/main/docs/decisions/0019-keep-usage-data-on-the-host.md">The binary sends no telemetry</a>
-      {{- /* Append, never interleave: scripts/verify-etalon.py diffs this
-             footer against the etalon, and an insertion at the end is one
-             opcode instead of several anchored around surviving text. */ -}}
-      <span class="sep" aria-hidden="true">·</span>
       <a class="ilink" href="/privacy/">Privacy</a>
       <span class="sep" aria-hidden="true">·</span>
       <a class="ilink" href="/cookies/">Cookies</a>
