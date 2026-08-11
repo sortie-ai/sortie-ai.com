@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+{{- /* .Lang is the language key ("en"), matching the etalon. The
+       .LanguageCode method was deprecated in Hugo 0.158.0. */ -}}
+<html lang="{{ site.Language.Lang }}" data-theme="dark">
+<head>
+{{ partial "head.html" . }}
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+{{ partial "header.html" . }}
+
+{{- /* tabindex="-1" is what makes the skip link actually work. Without it the
+       browser moves only the sequential-focus starting point; document.
+       activeElement stays on <body>, so anything reading focus — a screen
+       reader, a focus-visible style — never learns that the jump happened. */}}
+<main id="main" tabindex="-1">
+{{ block "main" . }}{{ end }}
+</main>
+
+{{ partial "footer.html" . }}
+</body>
+</html>

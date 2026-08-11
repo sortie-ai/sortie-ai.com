@@ -1,0 +1,32 @@
+{{- /* /llms.txt per https://llmstxt.org
+
+       Scope note, so nobody over-reads this file: no LLM vendor has published
+       evidence that it consumes llms.txt, and Google Search has said the file
+       neither helps nor harms ranking. It is here because it is nearly free,
+       because Lighthouse now audits for it, and because the real content lives
+       one hop away in the documentation's own far richer llms.txt.
+
+       Registered as a custom output format in hugo.toml. */ -}}
+# Sortie
+
+> {{ site.Params.description }}
+
+Sortie is an autonomous coding agent orchestrator. Engineers manage work at the ticket level — Sortie handles the rest: isolated workspaces, retry logic, state reconciliation, tracker integration, and cost tracking. Single binary, zero dependencies, SQLite persistence. Apache-2.0. The binary sends no telemetry.
+
+This is the project's landing page. The documentation site carries the full content index, and every page there is also available as clean Markdown via the `Accept: text/markdown` request header.
+
+## Documentation
+
+- [Documentation index]({{ site.Params.docs }}/llms.txt): Navigation index of every documentation page.
+- [Full documentation, single file]({{ site.Params.docs }}/llms-full.txt): The complete documentation as one Markdown file.
+- [Installation]({{ site.Params.docs }}/getting-started/installation/): Install on macOS, Linux, or Windows via script, Homebrew, Go, Docker, or release binaries.
+- [Quick start]({{ site.Params.docs }}/getting-started/quick-start/): End-to-end tutorial from polling an issue to running an agent session locally.
+- [Architecture]({{ site.Params.docs }}/concepts/architecture/): How the orchestrator is built.
+- [Workflow configuration reference]({{ site.Params.docs }}/reference/workflow-config/): Every field of WORKFLOW.md.
+
+## Project
+
+- [Source]({{ site.Params.github }}): Go source, Apache-2.0.
+- [Releases]({{ site.Params.github }}/releases): Signed binaries with checksums and SBOMs. Current release {{ site.Params.version }}.
+- [Architecture specification]({{ site.Params.github }}/blob/main/docs/architecture.md): The canonical description of the system.
+- [Decision records]({{ site.Params.github }}/tree/main/docs/decisions): Accepted ADRs explaining why the system is shaped the way it is.

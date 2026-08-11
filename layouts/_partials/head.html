@@ -1,0 +1,59 @@
+{{- $title := cond .IsHome (printf "%s · Turn tracker tickets into autonomous agent sessions" site.Title) (printf "%s · %s" .Title site.Title) -}}
+{{- $desc := or .Description site.Params.description -}}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{{ $title }}</title>
+<meta name="description" content="{{ $desc }}">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="{{ site.Params.themeColor | default `#00112B` }}">
+{{- /* The 404 page is served with a 404 status by Cloudflare, which is already
+       enough for a crawler. It still gets noindex and no canonical: a
+       self-canonical on an error page is a claim that the page is the
+       preferred version of itself, which is not something we want indexed, and
+       a social card for "page not found" has nothing to preview. */}}
+{{- if eq .Kind "404" }}
+<meta name="robots" content="noindex, follow">
+{{- else }}
+<link rel="canonical" href="{{ .Permalink }}">
+{{ partial "meta.html" . }}
+{{- end }}
+
+{{- /* Sets .js on <html> before first paint. The reveal animation is scoped to
+       it, so a page whose script never runs stays fully visible instead of
+       rendering as a blank column. Deliberately inline and deliberately first. */}}
+<script>document.documentElement.classList.add('js')</script>
+
+{{- /* Font: fingerprinted, preloaded, and its URL injected into the stylesheet.
+       woff2 is the only format shipped; every browser that supports variable
+       fonts supports woff2. */}}
+{{- $font := resources.Get "fonts/inter-latin-wght-normal.woff2" | fingerprint }}
+<link rel="preload" href="{{ $font.RelPermalink }}" as="font" type="font/woff2" crossorigin="anonymous">
+
+{{- /* Stylesheet: template-expanded (for the font URL), then minified, then
+       fingerprinted. That order matters — fingerprinting first would hash the
+       unminified bytes and the filename would not match what ships. */}}
+{{- with resources.Get "css/main.css" }}
+  {{- with . | resources.ExecuteAsTemplate "css/main.css" (dict "fontURL" $font.RelPermalink) | minify | fingerprint "sha384" }}
+<link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
+  {{- end }}
+{{- end }}
+
+{{- with resources.Get "js/main.js" }}
+  {{- with . | js.Build (dict "minify" true "target" "es2020") | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous" defer></script>
+  {{- end }}
+{{- end }}
+
+{{- /* Icon set, all generated from assets/img/icon.svg by
+       scripts/generate-icons.mjs. The SVG is listed first and is real
+       geometry, not a wrapped bitmap, so a browser that supports it gets a
+       mark that stays sharp at any size; the .ico and PNGs are the fallback
+       for those that do not. */}}
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+
+{{ partial "schema.html" . }}

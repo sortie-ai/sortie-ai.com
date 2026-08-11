@@ -1,0 +1,482 @@
+{{ define "main" }}
+
+{{- /* ================= HERO ================= */}}
+<section class="hero" aria-labelledby="h-hero">
+  <div class="wrap">
+    <span class="eyebrow">Open source coding agent orchestrator</span>
+
+    <h1 id="h-hero">Your issue tracker is <em>already</em> the queue.</h1>
+
+    <p class="lede">
+      Sortie is the runner. It polls Jira, GitHub, GitLab, Linear or Gitea, gives every ticket
+      an isolated workspace, launches the coding agent you already use, and follows the work
+      through CI, review and merge. <strong>It installs as one file</strong> and runs on your
+      laptop or on a server you already have. Nothing to install alongside it, and nothing
+      phoning home.
+    </p>
+
+    {{ partial "install-tabs.html" . }}
+
+    <div class="cta-row">
+      <a class="btn btn-primary" href="{{ site.Params.docs }}/getting-started/quick-start/">
+        Run your first ticket
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true" focusable="false"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+      </a>
+      <a class="btn btn-ghost" href="{{ site.Params.github }}">Read the source</a>
+    </div>
+
+    <p class="assure">
+      Free and Apache-2.0. No account to create, no seat to buy, and no meter of ours between you
+      and your agent.
+    </p>
+
+    {{- /* The dispatch board is a picture of a running system, not data. It is
+           exposed as a single image with a description so that assistive
+           technology is not walked through four rows of invented ticket
+           titles. */}}
+    <div class="board rv" role="img" aria-label="Illustration of the Sortie dispatch board: four tracker issues running in parallel as agent sessions, with states running, in review, retrying after a CI failure, and merged, plus an orchestrator log.">
+      <div class="board-bar">
+        <span class="tl" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="board-title">sortie · billing-api · WORKFLOW.md</span>
+        <span class="board-meta">
+          <span class="chip"><span class="live" aria-hidden="true"></span>live · 4 of 4 concurrent</span>
+          <span class="chip">tracker: github</span>
+        </span>
+      </div>
+
+      <div class="board-body">
+        <div class="sessions">
+          <div class="srow">
+            <span class="sid">#412</span>
+            <span class="stitle">Fix decimal rounding in invoice totals</span>
+            <span class="stok">18.2k tok</span>
+            <span class="smeta">
+              <span class="tag">claude-code</span>
+              <span class="tag run">running · turn 3</span>
+              <span class="tag">workspace 412</span>
+            </span>
+            <span class="sbar b-run"><span></span></span>
+          </div>
+
+          <div class="srow">
+            <span class="sid">#408</span>
+            <span class="stitle">Bump golang.org/x/net to the patched release</span>
+            <span class="stok">6.4k tok</span>
+            <span class="smeta">
+              <span class="tag">codex</span>
+              <span class="tag rev">PR open · awaiting review</span>
+            </span>
+            <span class="sbar b-rev"><span></span></span>
+          </div>
+
+          <div class="srow">
+            <span class="sid">#401</span>
+            <span class="stitle">Add regression test for the refund webhook</span>
+            <span class="stok">41.0k tok</span>
+            <span class="smeta">
+              <span class="tag">claude-code</span>
+              <span class="tag ret">CI failed · retry 2 of 3</span>
+              <span class="tag">backoff 4m</span>
+            </span>
+            <span class="sbar b-ret"><span></span></span>
+          </div>
+
+          <div class="srow">
+            <span class="sid">#397</span>
+            <span class="stitle">Backfill the missing tenant index</span>
+            <span class="stok">12.8k tok</span>
+            <span class="smeta">
+              <span class="tag">opencode</span>
+              <span class="tag mrg">merged · issue closed</span>
+            </span>
+            <span class="sbar b-mrg"><span></span></span>
+          </div>
+        </div>
+
+        <div class="term">
+          <div><span class="t">09:14:02</span> <span class="k">poll</span> 4 issues match label:agent-ready</div>
+          <div><span class="t">09:14:02</span> <span class="k">dispatch</span> #412 <span class="t">rule</span> label:bug <span class="t">→</span> claude-code</div>
+          <div><span class="t">09:14:03</span> <span class="k">workspace</span> created, cwd validated</div>
+          <div><span class="t">09:16:41</span> <span class="b">reaction</span> ci #401 checks failed</div>
+          <div><span class="t">09:16:41</span> <span class="y">retry</span> #401 attempt 2, backoff 4m0s</div>
+          <div><span class="t">09:21:08</span> <span class="b">reaction</span> review #408 2 comments routed</div>
+          <div><span class="t">09:24:55</span> <span class="g">merge</span> #397 PR merged, handoff done</div>
+          <div><span class="t">09:24:55</span> <span class="g">tracker</span> #397 transitioned to done</div>
+          <div><span class="t">09:25:10</span> <span class="k">budget</span> #401 41.0k / 120k tokens</div>
+          <div><span class="t">09:25:12</span> <span class="k">reconcile</span> 3 active, 1 terminal<span class="caret"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{- /* ================= THE GAP ================= */}}
+<section class="band" id="why" aria-labelledby="h-why">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">What Sortie owns</span>
+      <h2 id="h-why">Sortie does not make your agent smarter.</h2>
+      <p>
+        It assumes the agent already produces useful work when you run it by hand.
+        Everything between that and a merged pull request is the part that does not exist yet,
+        the part every team rebuilds ad hoc, and the part Sortie is.
+      </p>
+    </div>
+
+    {{- /* Each row pairs a gap with what closes it, which is what a description
+           list is for. The etalon used two anonymous <div>s. */}}
+    <dl class="gap-grid rv">
+      <div class="gap-row">
+        <dt class="l">The agent finishes and nobody moves the ticket.</dt>
+        <dd class="r">The orchestrator writes the handoff transition, and can move the issue to a terminal state when the pull request it manages is merged. <a class="ilink" href="{{ site.Params.docs }}/reference/state-machine/">State machine</a></dd>
+      </div>
+      <div class="gap-row">
+        <dt class="l">Two agents share one checkout and corrupt each other.</dt>
+        <dd class="r">One isolated workspace per issue. Path containment and working-directory validation are enforced before launch, and retention is bounded by age. <a class="ilink" href="{{ site.Params.docs }}/concepts/isolation/">Workspace isolation</a></dd>
+      </div>
+      <div class="gap-row">
+        <dt class="l">A run dies overnight and the state is gone.</dt>
+        <dd class="r">State is written to disk as it happens. The retry queue, run history, session metadata and pending reactions are rebuilt on startup instead of lost. <a class="ilink" href="{{ site.Params.docs }}/guides/resume-sessions-across-restarts/">Resuming after a restart</a></dd>
+      </div>
+      <div class="gap-row">
+        <dt class="l">CI turns red and the agent never learns about it.</dt>
+        <dd class="r">CI status is read back through a provider interface, and the failure is injected into the retry prompt. <a class="ilink" href="{{ site.Params.docs }}/guides/configure-ci-feedback/">CI feedback</a></dd>
+      </div>
+      <div class="gap-row">
+        <dt class="l">A reviewer leaves six comments into the void.</dt>
+        <dd class="r">Human review comments, bot reviews and merge conflicts are routed back to the session as reactions, deduplicated so the same comment is never answered twice. <a class="ilink" href="{{ site.Params.docs }}/guides/configure-review-feedback/">Review feedback</a></dd>
+      </div>
+      <div class="gap-row">
+        <dt class="l">Nobody can say what last month cost.</dt>
+        <dd class="r">Cumulative token counts per issue, a ceiling that stops the run before it overspends, and <code>sortie stats</code> over the recorded history. <a class="ilink" href="{{ site.Params.docs }}/guides/control-costs/">Controlling costs</a></dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+{{- /* ================= HOW ================= */}}
+<section class="band" id="how" aria-labelledby="h-how">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">The loop</span>
+      <h2 id="h-how">Poll, dispatch, reconcile. Then do it again.</h2>
+      <p>
+        One process is the single authority for every scheduling decision. There is no external
+        job queue and no distributed coordination to stand up first.
+      </p>
+    </div>
+
+    <ol class="steps rv">
+      <li><a class="step" href="{{ site.Params.docs }}/concepts/orchestration/">
+        <span class="n">01 · POLL</span>
+        <h3>Read the tracker</h3>
+        <p>A query filter and a set of active states decide which tickets are in scope. Nothing else in your tracker is touched.</p>
+      </a></li>
+      <li><a class="step" href="{{ site.Params.docs }}/guides/configure-dispatch-rules/">
+        <span class="n">02 · DISPATCH</span>
+        <h3>Route the issue</h3>
+        <p>Dispatch rules pick an agent and a prompt template by label, issue type, priority, identifier or assignee. First match wins.</p>
+      </a></li>
+      <li><a class="step" href="{{ site.Params.docs }}/concepts/isolation/">
+        <span class="n">03 · ISOLATE</span>
+        <h3>Give it a workspace</h3>
+        <p>Every issue gets its own. Concurrency is capped globally and per state, effort is capped per issue by session count and token ceiling.</p>
+      </a></li>
+      <li><a class="step" href="{{ site.Params.docs }}/guides/setup-pr-reactions/">
+        <span class="n">04 · REACT</span>
+        <h3>Follow the work</h3>
+        <p>CI failures, review comments, bot reviews, merge conflicts, the <code>sortie:review</code> and <code>sortie:fix</code> label commands, and auto-merge.</p>
+      </a></li>
+      <li><a class="step" href="{{ site.Params.docs }}/reference/state-machine/">
+        <span class="n">05 · HAND OFF</span>
+        <h3>Close the loop</h3>
+        <p>The issue is transitioned on completion, and can be moved to a terminal state when the managed pull request merges. Stalls, timeouts and retries are handled on the way.</p>
+      </a></li>
+    </ol>
+  </div>
+</section>
+
+{{- /* ================= WORKFLOW ================= */}}
+<section class="band" id="workflow" aria-labelledby="h-workflow">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Configuration</span>
+      <h2 id="h-workflow">The whole configuration is one file, and the file is a prompt.</h2>
+      <p>
+        The block at the top says which tracker to read and which agent to run. Everything below it
+        is the prompt, with each issue's own title, description and identifier filled in before the
+        agent ever sees it. Sortie watches the file, so an edit applies without a restart.
+      </p>
+    </div>
+
+    <div class="wf">
+      <div class="code-card rv">
+        <div class="hd">
+          <span class="tl" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>WORKFLOW.md</span>
+        </div>
+<pre tabindex="0"><span class="fm">---</span>
+<span class="key">tracker</span>:
+  <span class="key">kind</span>: <span class="val">github</span>
+  <span class="key">api_key</span>: <span class="val">$GITHUB_TOKEN</span>
+  <span class="key">project</span>: <span class="val">acme/billing-api</span>
+  <span class="key">query_filter</span>: <span class="str">"label:agent-ready"</span>
+  <span class="key">active_states</span>: [<span class="val">todo</span>, <span class="val">in-progress</span>]
+  <span class="key">handoff_state</span>: <span class="val">review</span>
+  <span class="key">terminal_states</span>: [<span class="val">done</span>]
+
+<span class="key">agent</span>:
+  <span class="key">kind</span>: <span class="val">claude-code</span>
+  <span class="key">max_concurrent_agents</span>: <span class="val">4</span>
+<span class="fm">---</span>
+
+You are a senior engineer.
+
+<span class="cm">## </span><span class="tpl">{{ "{{" }} .issue.identifier {{ "}}" }}</span><span class="cm">: </span><span class="tpl">{{ "{{" }} .issue.title {{ "}}" }}</span>
+
+<span class="tpl">{{ "{{" }} .issue.description {{ "}}" }}</span></pre>
+      </div>
+
+      <ul class="wf-notes rv">
+        <li>
+          <h3>Two knobs, not a control plane</h3>
+          <p>Which tickets are in scope, and which agent runs them. Everything past that has a working default you can leave alone. <a class="ilink" href="{{ site.Params.docs }}/reference/workflow-config/">Every field, explained</a></p>
+        </li>
+        <li>
+          <h3>Switching agent is one line</h3>
+          <p>Change <code>agent.kind</code> and the next dispatch runs a different coding agent against the same tickets, with the same prompt. <a class="ilink" href="{{ site.Params.docs }}/reference/">Adapter reference</a></p>
+        </li>
+        <li>
+          <h3>The prompt is yours, in full</h3>
+          <p>Write it the way you already write prompts. Name a field that does not exist and the file refuses to load, instead of quietly handing the agent a blank space. <a class="ilink" href="{{ site.Params.docs }}/guides/write-prompt-template/">Writing the prompt</a></p>
+        </li>
+        <li>
+          <h3>Hot reload</h3>
+          <p>The file is watched. Edit the prompt, save, and the next session uses it. No restart, no redeploy, no in-flight work lost. <a class="ilink" href="{{ site.Params.docs }}/guides/run-multiple-workflows/">Running several at once</a></p>
+        </li>
+        <li>
+          <h3>Routing when one prompt is not enough</h3>
+          <p>Add a <code>dispatch:</code> block to send bugs to one agent and dependency bumps to another, matched on labels, type, priority, identifier or assignee. <a class="ilink" href="{{ site.Params.docs }}/guides/configure-dispatch-rules/">Dispatch rules</a></p>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+{{- /* ================= ADAPTERS ================= */}}
+<section class="band" id="adapters" aria-labelledby="h-adapters">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Integrations</span>
+      <h2 id="h-adapters">Bring the tracker and the agent you already have.</h2>
+      <p>
+        Every integration sits behind an adapter interface. Nothing in the core is named after a
+        vendor, and adding support for a new one is an additive change in a new package.
+      </p>
+    </div>
+
+    <ul class="ad-grid rv">
+      {{- range hugo.Data.adapters.groups }}
+      <li>
+        <div class="ad">
+          <h3 id="ad-{{ .id }}">{{ .title }}</h3>
+          <ul aria-labelledby="ad-{{ .id }}">
+            {{- range .items }}
+            <li><span class="kv" aria-hidden="true">›</span><a href="{{ site.Params.docs }}{{ .href }}">{{ .name }}{{ with .note }} <small>{{ . }}</small>{{ end }}</a></li>
+            {{- end }}
+          </ul>
+        </div>
+      </li>
+      {{- end }}
+    </ul>
+
+    <p class="note">
+      One caveat worth knowing before you pick: Kiro runs headless with no structured event stream,
+      so token budgets and agent tools do not apply on that path. The other four agents carry the full
+      feature set. <a class="ilink" href="{{ site.Params.docs }}/guides/write-custom-agent-adapter/">Writing your own adapter</a>
+    </p>
+  </div>
+</section>
+
+{{- /* ================= AGENT TOOLS ================= */}}
+<section class="band" id="tools" aria-labelledby="h-tools">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Agent tools over MCP</span>
+      <h2 id="h-tools">The agent can ask the orchestrator where it stands.</h2>
+      <p>
+        Sortie exposes an MCP server over stdio to the session it launched. No external connector
+        to configure, no second set of credentials, and one result envelope across all five tools.
+      </p>
+    </div>
+
+    <ul class="tools rv">
+      <li><a class="tool" href="{{ site.Params.docs }}/concepts/agent-tools/"><code>sortie_status</code><p>The agent reads its own orchestration context: turn count, attempt number, elapsed duration.</p></a></li>
+      <li><a class="tool" href="{{ site.Params.docs }}/concepts/persistence/"><code>workspace_history</code><p>Results of previous runs on this issue, so attempt three knows what attempts one and two already tried.</p></a></li>
+      <li><a class="tool" href="{{ site.Params.docs }}/concepts/agent-communication/"><code>tracker_api</code><p>Fetch an issue or its comments, search, transition. Routed through the orchestrator's canonical channel rather than a second set of credentials.</p></a></li>
+      <li><a class="tool" href="{{ site.Params.docs }}/guides/control-costs/"><code>cost_budget</code><p>Cumulative token spend and remaining budget for the current issue, so the agent can decide what it can still afford to attempt.</p></a></li>
+      <li><a class="tool" href="{{ site.Params.docs }}/reference/workflow-config/"><code>notify_operator</code><p>Send a message to Slack or a webhook mid-session, without waiting for the run to finish.</p></a></li>
+      <li><a class="tool" href="{{ site.Params.docs }}/guides/use-agent-tools-in-prompts/"><code>.sortie/status</code><p>A file protocol for agents that cannot speak MCP. Write the file, signal blocked or needs-review, and the orchestrator reacts.</p></a></li>
+    </ul>
+  </div>
+</section>
+
+{{- /* ================= OPERATE ================= */}}
+<section class="band" id="operate" aria-labelledby="h-operate">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Day two</span>
+      <h2 id="h-operate">Built to be operated, not watched.</h2>
+      <p>
+        Parallel agents are only useful if you can leave them running. That means a metrics series
+        you can alert on, a cost figure you can report, and a process that restarts cleanly.
+      </p>
+    </div>
+
+    <ul class="ops rv">
+      <li><a class="op" href="{{ site.Params.docs }}/guides/monitor-with-prometheus/">
+        <h3>Metrics</h3>
+        <p>Prometheus at <code>/metrics</code> on a dedicated registry, with a Grafana dashboard template in the repository.</p>
+      </a></li>
+      <li><a class="op" href="{{ site.Params.docs }}/reference/dashboard/">
+        <h3>Dashboard and API</h3>
+        <p>An HTML dashboard embedded in the binary with token cost estimation, plus a JSON HTTP API for everything it shows.</p>
+      </a></li>
+      <li><a class="op" href="{{ site.Params.docs }}/reference/cli/">
+        <h3>Cost reporting</h3>
+        <p><code>sortie stats</code> summarizes how past runs went and what they cost. It opens the database read-only, so it never blocks a running orchestrator.</p>
+      </a></li>
+      <li><a class="op" href="{{ site.Params.docs }}/guides/monitor-with-logs/">
+        <h3>Logs</h3>
+        <p>Structured logging in text or JSON, so the output goes into whatever you already ship logs to.</p>
+      </a></li>
+      <li><div class="op">
+        <h3 id="op-deployment">Deployment</h3>
+        <ul aria-labelledby="op-deployment">
+          <li><a href="{{ site.Params.docs }}/guides/run-as-systemd-service/">Single binary under systemd or launchd</a></li>
+          <li><a href="{{ site.Params.docs }}/guides/use-sortie-in-docker/">Container image on GHCR</a></li>
+          <li><a href="{{ site.Params.docs }}/guides/deploy-sortie-to-kubernetes/">Kubernetes manifests</a></li>
+          <li><a href="{{ site.Params.docs }}/guides/scale-agents-with-ssh/">SSH worker distribution</a></li>
+        </ul>
+      </div></li>
+      <li><a class="op" href="{{ site.Params.github }}/blob/main/docs/decisions/0019-keep-usage-data-on-the-host.md">
+        <h3>No telemetry</h3>
+        <p>No analytics client and no update check. The only endpoints the binary contacts belong to the adapters your workflow file selects. This is a written decision, not a default.</p>
+      </a></li>
+    </ul>
+  </div>
+</section>
+
+{{- /* ================= IS / IS NOT ================= */}}
+<section class="band" id="scope" aria-labelledby="h-scope">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Scope</span>
+      <h2 id="h-scope">Worth knowing before you install it.</h2>
+      <p>
+        The fastest way to be disappointed by an orchestrator is to expect it to be an agent.
+        Here is the line, drawn on purpose.
+      </p>
+    </div>
+
+    <div class="isnot rv">
+      <div class="yes">
+        <h3 id="is-yes">Sortie is</h3>
+        <ul aria-labelledby="is-yes">
+          <li><span class="mark" aria-hidden="true">+</span>An orchestrator for coding agents</li>
+          <li><span class="mark" aria-hidden="true">+</span>A scheduler and runner</li>
+          <li><span class="mark" aria-hidden="true">+</span>A tracker reader and handoff writer</li>
+          <li><span class="mark" aria-hidden="true">+</span>One file to install, with nothing alongside it</li>
+          <li><span class="mark" aria-hidden="true">+</span>Agent-agnostic</li>
+          <li><span class="mark" aria-hidden="true">+</span>Tracker-agnostic</li>
+        </ul>
+      </div>
+      <div class="no">
+        <h3 id="is-no">Sortie is not</h3>
+        <ul aria-labelledby="is-no">
+          <li><span class="mark" aria-hidden="true">−</span>A coding agent itself</li>
+          <li><span class="mark" aria-hidden="true">−</span>A general-purpose workflow engine</li>
+          <li><span class="mark" aria-hidden="true">−</span>A full tracker write layer</li>
+          <li><span class="mark" aria-hidden="true">−</span>A hosted platform</li>
+          <li><span class="mark" aria-hidden="true">−</span>Locked to one agent vendor</li>
+          <li><span class="mark" aria-hidden="true">−</span>Locked to one tracker</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{- /* ================= AUDIENCE ================= */}}
+<section class="band" id="who" aria-labelledby="h-who">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Who runs it</span>
+      <h2 id="h-who">Starts on one laptop. Survives a team.</h2>
+    </div>
+
+    <ul class="aud rv">
+      <li><a class="card" href="{{ site.Params.docs }}/getting-started/quick-start/">
+        <span class="role">Individual engineer</span>
+        <h3>Clear the routine backlog</h3>
+        <p>Point it at your own repository and a label. Dependency bumps, flaky test fixes and small bugs run while you work on something else. Nothing to provision, nothing to sign up for.</p>
+      </a></li>
+      <li><a class="card" href="{{ site.Params.docs }}/guides/orchestrate-across-repositories/">
+        <span class="role">Tech lead</span>
+        <h3>Run more than one at a time</h3>
+        <p>Concurrency caps, retry with backoff, per-issue effort ceilings and a dashboard that says which sessions are live. Dispatch rules keep the noisy work off the expensive agent.</p>
+      </a></li>
+      <li><a class="card" href="{{ site.Params.docs }}/concepts/security/">
+        <span class="role">Head of engineering</span>
+        <h3>Answer the two hard questions</h3>
+        <p>What did it cost, and where did the data go. Token accounting per issue, run history you can query, and a binary that phones nobody, running on infrastructure you control.</p>
+      </a></li>
+    </ul>
+  </div>
+</section>
+
+{{- /* ================= SPEC ================= */}}
+<section class="band" id="spec" aria-labelledby="h-spec">
+  <div class="wrap">
+    <div class="spec rv">
+      <div>
+        <span class="eyebrow">Spec first</span>
+        <h2 id="h-spec">Every decision is written down, including the ones we reversed.</h2>
+        <p>
+          The architecture specification is the canonical description of the system, and drift from
+          it counts as a bug in both directions. Twenty accepted decision records explain why one
+          package per forge, why a workspace is kept by age and not by the state of its ticket, why
+          the binary sends nothing home. Read them before you trust the code, or before you send a
+          patch.
+        </p>
+      </div>
+      <div class="spec-links">
+        <a class="btn btn-ghost" href="{{ site.Params.docs }}/concepts/architecture/">How it is built</a>
+        <a class="btn btn-ghost" href="{{ site.Params.github }}/blob/main/docs/architecture.md">Full specification</a>
+        <a class="btn btn-ghost" href="{{ site.Params.github }}/tree/main/docs/decisions">Decision records</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{- /* ================= FINAL CTA ================= */}}
+<section class="band final" aria-labelledby="h-final">
+  <div class="wrap">
+    <h2 id="h-final">Point it at a repository and a tracker.</h2>
+    <p>Free, Apache-2.0, and the whole thing is one binary. The quick start takes a ticket to a pull request.</p>
+
+    <div class="install">
+      <div class="cmd">
+        <pre tabindex="0"><span class="p">{{ hugo.Data.install.primary.prompt }}</span> {{ hugo.Data.install.primary.command }}</pre>
+        {{ partial "copy-button.html" (dict "command" hugo.Data.install.primary.command "label" hugo.Data.install.primary.copyLabel) }}
+      </div>
+    </div>
+
+    <div class="cta-row centred">
+      <a class="btn btn-primary" href="{{ site.Params.docs }}/getting-started/quick-start/">Quick start</a>
+      <a class="btn btn-ghost" href="{{ site.Params.github }}">GitHub</a>
+      <a class="btn btn-ghost" href="{{ site.Params.docs }}">Documentation</a>
+    </div>
+  </div>
+</section>
+
+{{ end }}

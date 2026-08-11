@@ -1,0 +1,24 @@
+{{- /* aria-controls names the navigation list, not the <header>. The etalon
+       pointed it at the header that contains the button, which tells assistive
+       technology nothing about what the button toggles. */ -}}
+<header class="site-header" id="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/" aria-label="Sortie home">
+      {{ partial "logo.html" . }}
+      Sortie
+    </a>
+    <nav class="nav-links" id="primary-nav" aria-label="Primary">
+      {{- range site.Menus.main }}
+      <a href="{{ .URL }}">{{ .Name }}</a>
+      {{- end }}
+    </nav>
+    <div class="nav-right">
+      <span class="ver">{{ site.Params.version }}</span>
+      <a class="btn btn-ghost btn-sm" href="{{ site.Params.github }}">GitHub</a>
+      <a class="btn btn-primary btn-sm" href="{{ site.Params.docs }}/getting-started/quick-start/">Quick start</a>
+      <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="primary-nav">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>

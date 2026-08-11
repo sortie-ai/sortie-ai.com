@@ -1,0 +1,79 @@
+{{- /* Each link column is its own <nav> with an accessible name, so a screen
+       reader can list four distinct navigation regions instead of one
+       undifferentiated block of links. The etalon used bare <div>s. */ -}}
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot">
+      <div class="about">
+        <a class="brand" href="/">
+          {{ partial "logo.html" . }}
+          Sortie
+        </a>
+        <p>
+          A sortie is a single mission executed autonomously. The orchestrator dispatches agents on
+          missions, each with an isolated workspace, a defined objective and an expected return.
+        </p>
+      </div>
+
+      <nav aria-labelledby="foot-product">
+        <h2 id="foot-product">Product</h2>
+        <ul>
+          {{- range site.Menus.product }}
+          <li><a href="{{ .URL }}">{{ .Name }}</a></li>
+          {{- end }}
+        </ul>
+      </nav>
+
+      <nav aria-labelledby="foot-docs">
+        <h2 id="foot-docs">Documentation</h2>
+        <ul>
+          {{- range site.Menus.documentation }}
+          <li><a href="{{ .URL }}">{{ .Name }}</a></li>
+          {{- end }}
+        </ul>
+      </nav>
+
+      <nav aria-labelledby="foot-project">
+        <h2 id="foot-project">Project</h2>
+        <ul>
+          {{- range site.Menus.project }}
+          <li><a href="{{ .URL }}">{{ .Name }}</a></li>
+          {{- end }}
+        </ul>
+      </nav>
+    </div>
+
+    <div class="legal">
+      <a class="ilink" href="{{ site.Params.github }}/blob/main/LICENSE">Apache License 2.0</a>
+      <span class="sep" aria-hidden="true">·</span>
+      {{- /* Deliberately /releases/latest rather than a pinned tag.
+
+             Releases from 1.19.0 on carry a "v"-prefixed git tag
+             (sortie-ai/sortie#792), while the version number itself stays bare
+             everywhere a human or a machine reads it. A pinned link therefore
+             has to know which convention applies to the release it names, and
+             getting that wrong fails silently in both directions:
+
+               /releases/tag/1.19.0   -> a hard 404 once tags gain the prefix
+               /releases/tag/v1.18.0  -> HTTP 200, but it is a release-LESS tag
+                                         page: no notes, no assets. Verified —
+                                         the Releases API returns 404 for it
+                                         while the HTML page returns 200, so a
+                                         status-code link check reports green.
+
+             Both tag forms exist for every past release (the backfill is
+             additive, nothing is deleted), which is exactly why the status code
+             cannot be trusted to tell them apart.
+
+             /releases/latest sidesteps the whole question: it is a 302 to
+             whatever the current release actually is, under whichever tag
+             convention produced it, with no coordination between this file and
+             the release process. It also matches the word "Latest" in the
+             label. The version number below is still a single edit in
+             hugo.toml. */ -}}
+      <a class="ilink" href="{{ site.Params.github }}/releases/latest">Latest release {{ site.Params.version }}</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a class="ilink" href="{{ site.Params.github }}/blob/main/docs/decisions/0019-keep-usage-data-on-the-host.md">The binary sends no telemetry</a>
+    </div>
+  </div>
+</footer>

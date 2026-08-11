@@ -1,0 +1,40 @@
+# Install commands, verbatim from the Sortie documentation.
+#
+# The etalon repeated these five times, twice identically. Every command below
+# was verified against sortie-docs/content/getting-started/installation.md and
+# the sortie repo's README.md and .goreleaser.yaml.
+#
+# `id` feeds the tab/panel element ids and the aria wiring.
+# `prompt` is the shell sigil rendered in the accent colour: `$` for POSIX
+# shells, `>` for PowerShell.
+# `label` is the tab caption; `copyLabel` is the button's accessible name and
+# must stay distinct per method — the etalon had a defect that collapsed them
+# all to one string after first use.
+
+tabs:
+  - id: sh
+    label: "macOS / Linux"
+    prompt: "$"
+    command: "curl -sSL https://get.sortie-ai.com/install.sh | sh"
+    copyLabel: "Copy install command"
+  - id: brew
+    label: "Homebrew"
+    prompt: "$"
+    command: "brew install --cask sortie-ai/tap/sortie"
+    copyLabel: "Copy Homebrew command"
+  - id: ps
+    label: "Windows"
+    prompt: ">"
+    command: "irm 'https://get.sortie-ai.com/install.ps1' | iex"
+    copyLabel: "Copy Windows command"
+  - id: go
+    label: "Go"
+    prompt: "$"
+    command: "go install github.com/sortie-ai/sortie/cmd/sortie@latest"
+    copyLabel: "Copy go install command"
+
+# The final call to action repeats the primary method with no tablist.
+primary:
+  prompt: "$"
+  command: "curl -sSL https://get.sortie-ai.com/install.sh | sh"
+  copyLabel: "Copy install command"

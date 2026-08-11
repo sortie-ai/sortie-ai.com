@@ -1,0 +1,36 @@
+{{- /* The install tablist, driven by data/install.yaml.
+
+       Accessibility notes, all of which fix defects in the etalon:
+       - roving tabindex: the selected tab carries tabindex="0", the rest "-1",
+         per the WAI-ARIA tabs pattern. The etalon left every tab in the tab
+         order while also binding arrow keys, so keyboard users met both.
+       - the tab stop for the scrollable region sits on the <pre>, not on the
+         tabpanel. The panel is overflow:hidden and the <pre> is the actual
+         scroller, so focusing the panel and pressing an arrow key scrolls
+         nothing — measured: scrollLeft stayed 0 with 167px hidden. Chromium
+         happens to make the <pre> focusable by itself, but that is a browser
+         behaviour, not a guarantee, so the tabindex is declared explicitly.
+       - each copy button keeps its own accessible name. */ -}}
+<div class="install">
+  <div class="tabs" role="tablist" aria-label="Install method">
+    {{- range $i, $t := hugo.Data.install.tabs }}
+    <button class="tab" type="button" role="tab" id="t-{{ $t.id }}"
+            aria-selected="{{ if eq $i 0 }}true{{ else }}false{{ end }}"
+            tabindex="{{ if eq $i 0 }}0{{ else }}-1{{ end }}"
+            aria-controls="p-{{ $t.id }}">{{ $t.label }}</button>
+    {{- end }}
+  </div>
+
+  {{- range $i, $t := hugo.Data.install.tabs }}
+  <div class="cmd" role="tabpanel" id="p-{{ $t.id }}" aria-labelledby="t-{{ $t.id }}"{{ if ne $i 0 }} hidden{{ end }}>
+    <pre tabindex="0"><span class="p">{{ $t.prompt }}</span> {{ $t.command }}</pre>
+    {{ partial "copy-button.html" (dict "command" $t.command "label" $t.copyLabel) }}
+  </div>
+  {{- end }}
+
+  <p class="install-alt">
+    Also as a <a class="ilink" href="{{ site.Params.docs }}/guides/use-sortie-in-docker/">container image</a>,
+    and as <a class="ilink" href="{{ site.Params.github }}/releases">release binaries</a>
+    for macOS, Linux and Windows on amd64 and arm64, each with a checksum and an SBOM.
+  </p>
+</div>

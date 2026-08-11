@@ -1,0 +1,55 @@
+{{- /* Generated, not static, so the sitemap URL stays bound to baseURL.
+       Requires enableRobotsTXT = true.
+
+       AI crawlers are allowed on purpose. This is a marketing site whose goal
+       is to be found and cited; blocking the crawlers that feed answer engines
+       would remove the site from exactly the surfaces its audience uses. The
+       user-agent tokens below are the ones each vendor documents, and they are
+       distinct per purpose: OpenAI separates training (GPTBot) from search
+       indexing (OAI-SearchBot) from user-initiated fetches (ChatGPT-User), and
+       Anthropic does the same. Blanket-allowing is a deliberate choice; to
+       withhold training while keeping search visibility, disallow GPTBot,
+       ClaudeBot, CCBot and Google-Extended and leave the rest.
+
+       HAZARD, per RFC 9309 section 2.2.1: a crawler obeys exactly one group —
+       the most specific one matching its product token — and ignores the `*`
+       group entirely. Every named group below therefore shadows `User-agent: *`
+       for that crawler. If you ever add a `Disallow` to the `*` group, you
+       must add it to all ten named groups too, or those crawlers will keep
+       fetching the path you just tried to close. The named groups exist to
+       state intent explicitly; they change nothing functionally, because the
+       default for an unlisted crawler is already "allowed". */ -}}
+User-agent: *
+Allow: /
+
+# OpenAI
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-SearchBot
+Allow: /
+User-agent: Claude-User
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+User-agent: Perplexity-User
+Allow: /
+
+# Common Crawl
+User-agent: CCBot
+Allow: /
+
+# Google's generative-AI opt-in, separate from Googlebot
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: {{ "sitemap.xml" | absURL }}

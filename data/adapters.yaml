@@ -1,0 +1,67 @@
+# Integration grid, verbatim from the etalon.
+#
+# `href` is relative to site.Params.docs.
+#
+# Known drift to watch, from a source audit of the sortie repo:
+#   - a sixth tracker adapter, `file`, is registered in
+#     internal/tracker/file/file.go and documented under
+#     guides/use-file-adapter-for-testing/. It is a testing adapter and is
+#     deliberately absent from this marketing grid.
+#   - GitLab SCM read operations have landed on main but were not in 1.18.0.
+#     When they ship, GitLab belongs in the "Code review and CI" group.
+
+groups:
+  - id: trackers
+    title: "Issue trackers"
+    items:
+      - name: "Jira"
+        note: "Cloud and Server / Data Center"
+        href: "/reference/adapter-jira/"
+      - name: "GitHub Issues"
+        href: "/reference/adapter-github/"
+      - name: "GitLab Issues"
+        href: "/reference/adapter-gitlab/"
+      - name: "Linear"
+        href: "/reference/adapter-linear/"
+      - name: "Gitea"
+        note: "covers Forgejo and Codeberg"
+        href: "/reference/adapter-gitea/"
+
+  - id: agents
+    title: "Coding agents"
+    items:
+      - name: "Claude Code"
+        href: "/reference/adapter-claude-code/"
+      - name: "Codex"
+        href: "/reference/adapter-codex/"
+      - name: "GitHub Copilot"
+        href: "/reference/adapter-copilot/"
+      - name: "OpenCode"
+        href: "/reference/adapter-opencode/"
+      - name: "Kiro"
+        note: "headless"
+        href: "/reference/adapter-kiro/"
+
+  - id: review
+    title: "Code review and CI"
+    items:
+      - name: "GitHub"
+        note: "pull requests, checks"
+        href: "/guides/connect-to-github/"
+      - name: "Gitea"
+        note: "pull requests, status"
+        href: "/guides/connect-to-gitea/"
+      - name: "Auto-merge and merge-conflict reactions"
+        href: "/reference/reactions/"
+      - name: "Self-review before the PR opens"
+        href: "/guides/configure-self-review/"
+
+  - id: notifications
+    title: "Notifications"
+    items:
+      - name: "Slack"
+        href: "/reference/workflow-config/"
+      - name: "Generic webhook"
+        href: "/reference/workflow-config/"
+      - name: "Agent-initiated, mid-session"
+        href: "/guides/use-agent-tools-in-prompts/"

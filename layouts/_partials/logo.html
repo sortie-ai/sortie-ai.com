@@ -1,0 +1,14 @@
+{{- /* The Sortie logomark, inlined from the one vector source.
+
+       Geometry comes from the brand master "Sortie AI Logo_E.svg" — the four
+       cyan polygons that make the chevron S. The wordmark is not part of it:
+       "Sortie" is set as HTML text beside the mark, so baking it into the SVG
+       would duplicate it and make it unselectable.
+
+       fill="currentColor" means the mark inherits colour from CSS, so the
+       BRAND token swap recolours it along with everything else. Inlined rather
+       than linked because it is ~600 bytes and sits on the critical path;
+       an <img> would cost a request and could not be recoloured. */ -}}
+{{- with resources.Get "img/logomark.svg" -}}
+{{- .Content | safeHTML -}}
+{{- end -}}

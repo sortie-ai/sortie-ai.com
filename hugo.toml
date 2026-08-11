@@ -1,0 +1,174 @@
+baseURL = "https://sortie-ai.com/"
+title = "Sortie"
+locale = "en-US"
+defaultContentLanguage = "en"
+
+# Hugo writes public/, which wrangler.toml exposes as the Cloudflare Workers
+# static-assets directory. Deploy with `npx wrangler deploy`.
+publishDir = "public"
+
+# Populates .Lastmod from the git author date, which feeds sitemap.xml.
+# Requires full git history: a shallow clone silently produces no dates.
+enableGitInfo = true
+
+# Emit robots.txt from layouts/robots.txt rather than shipping a static file,
+# so the sitemap URL stays bound to baseURL.
+enableRobotsTXT = true
+
+# A landing page has no taxonomies and no feed. Disabling these removes empty
+# /tags/ and /categories/ pages that read as thin content, and the RSS files.
+disableKinds = ["taxonomy", "term", "rss"]
+
+# Legacy brute-force URL rewriting, slated for removal upstream. Hugo emits
+# absolute URLs correctly from baseURL without it.
+canonifyURLs = false
+
+# Trim the build to what a static landing page actually serves.
+[outputs]
+home = ["html", "llmstxt"]
+page = ["html"]
+
+# /llms.txt per https://llmstxt.org, rendered by layouts/home.llmstxt.txt.
+# The template name matters: since Hugo 0.146 there is no `index` template for
+# the home page, so a custom output format resolves to `home.<format>.<ext>`.
+# `index.llmstxt.txt` builds with only a WARN and produces no file at all.
+# mediaType is text/plain so the file lands at /llms.txt; static/_headers then
+# serves it as text/markdown, which is what the spec asks for.
+[outputFormats.llmstxt]
+mediaType = "text/plain"
+baseName = "llms"
+isPlainText = true
+notAlternative = true
+
+[sitemap]
+filename = "sitemap.xml"
+# Google ignores both hints and has said so; emitting them is noise.
+changefreq = ""
+priority = -1
+
+[frontmatter]
+lastmod = [":git", "lastmod", ":default"]
+
+[markup.goldmark.renderer]
+# The page copy is authored as HTML in layouts, not Markdown. This only affects
+# any future Markdown page that needs an inline element.
+unsafe = true
+
+[minify]
+disableHTML = false
+[minify.tdewolff.html]
+keepQuotes = true
+keepDocumentTags = true
+
+[params]
+# --- Single source of truth for the release number -------------------------
+# The etalon hardcoded 1.18.0 in three places (JSON-LD, nav chip, footer).
+# Bump it here and nowhere else. Verified against the sortie repo's latest
+# semver tag and CHANGELOG.md heading `## [1.18.0] - 2026-08-09`.
+# Note the tag scheme: both `1.18.0` and `v1.18.0` exist upstream; the
+# unprefixed form is the one CHANGELOG compare links use.
+version = "1.18.0"
+
+description = "Open-source coding agent orchestrator. Sortie polls Jira, GitHub, GitLab, Linear or Gitea, gives every ticket an isolated workspace, launches the coding agent you already use, and follows the work through CI, review and merge. It installs as one file. Apache-2.0, no telemetry."
+
+# --- External hosts --------------------------------------------------------
+docs = "https://docs.sortie-ai.com"
+github = "https://github.com/sortie-ai/sortie"
+org = "https://github.com/sortie-ai"
+
+# --- Social card -----------------------------------------------------------
+# 1200x630 JPEG, byte-identical to the docs site's copy so both properties
+# share one social identity.
+ogImage = "img/og-image.jpg"
+ogImageAlt = "Sortie — the Sortie wordmark and chevron logomark in cyan on a deep navy field."
+
+[params.author]
+name = "Sortie AI"
+
+# --- Navigation ------------------------------------------------------------
+# Declared as menus rather than hardcoded in the templates so that adding a
+# second page costs one entry here and nothing in the markup.
+
+[[menus.main]]
+name = "How it works"
+url = "/#how"
+weight = 10
+[[menus.main]]
+name = "Configuration"
+url = "/#workflow"
+weight = 20
+[[menus.main]]
+name = "Adapters"
+url = "/#adapters"
+weight = 30
+[[menus.main]]
+name = "Operating it"
+url = "/#operate"
+weight = 40
+[[menus.main]]
+name = "Docs"
+url = "https://docs.sortie-ai.com"
+weight = 50
+
+[[menus.product]]
+name = "How it works"
+url = "/#how"
+weight = 10
+[[menus.product]]
+name = "Adapters"
+url = "/#adapters"
+weight = 20
+[[menus.product]]
+name = "Operating it"
+url = "/#operate"
+weight = 30
+[[menus.product]]
+name = "Scope"
+url = "/#scope"
+weight = 40
+
+[[menus.documentation]]
+name = "Installation"
+url = "https://docs.sortie-ai.com/getting-started/installation/"
+weight = 10
+[[menus.documentation]]
+name = "Quick start"
+url = "https://docs.sortie-ai.com/getting-started/quick-start/"
+weight = 20
+[[menus.documentation]]
+name = "Guides"
+url = "https://docs.sortie-ai.com/guides/"
+weight = 30
+[[menus.documentation]]
+name = "Concepts"
+url = "https://docs.sortie-ai.com/concepts/"
+weight = 40
+[[menus.documentation]]
+name = "Reference"
+url = "https://docs.sortie-ai.com/reference/"
+weight = 50
+[[menus.documentation]]
+name = "Changelog"
+url = "https://docs.sortie-ai.com/changelog/"
+weight = 60
+
+[[menus.project]]
+name = "Source"
+url = "https://github.com/sortie-ai/sortie"
+weight = 10
+[[menus.project]]
+name = "Releases"
+url = "https://github.com/sortie-ai/sortie/releases"
+weight = 20
+[[menus.project]]
+name = "Contributing"
+url = "https://github.com/sortie-ai/sortie/blob/main/CONTRIBUTING.md"
+weight = 30
+[[menus.project]]
+name = "Discussions"
+url = "https://github.com/sortie-ai/sortie/discussions"
+weight = 40
+[[menus.project]]
+name = "License"
+url = "https://github.com/sortie-ai/sortie/blob/main/LICENSE"
+weight = 50

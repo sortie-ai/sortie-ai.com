@@ -1,0 +1,75 @@
+{{- /* Structured data as a single @graph so the three nodes cross-reference by
+       @id rather than repeating each other. The etalon shipped a lone
+       SoftwareApplication with no Organization and no WebSite.
+
+       Note on rich results: Google's SoftwareApplication rich result requires
+       name, offers.price and one of aggregateRating or review. Only the first
+       two are present, and inventing a rating would violate Google's
+       structured-data policies, which require markup to be true and to reflect
+       something visible on the page. The block is therefore worth shipping for
+       entity understanding, not for stars in the SERP.
+
+       FAQPage and HowTo are deliberately absent: Google retired both rich
+       result types in 2026.
+
+       softwareVersion is driven by site.Params.version, the single place the
+       release number lives.
+
+       The repository URL is expressed with sameAs, not codeRepository.
+       schema.org declares codeRepository's domainIncludes as SoftwareSourceCode
+       only, and SoftwareSourceCode is a *sibling* of SoftwareApplication under
+       CreativeWork — there is no inheritance path, so the property is invalid
+       here and Google's Rich Results Test flags it. sameAs has domainIncludes
+       Thing, so it is valid on any type and states the same fact.
+
+       Note on Go template syntax: a {{ }} action cannot appear between the
+       arguments of another action, so comments about individual keys of the
+       dict below have to live up here. */ -}}
+{{- $org := printf "%s#organization" site.BaseURL -}}
+{{- $web := printf "%s#website" site.BaseURL -}}
+{{- $app := printf "%s#software" site.BaseURL -}}
+{{- /* Organization.logo wants a logo, not the social card. The 512px icon is
+       the largest raster the icon pipeline emits and is square, which is what
+       Google's logo guidance expects. */ -}}
+{{- $logo := "/android-chrome-512x512.png" | absURL -}}
+{{- $graph := slice
+  (dict
+    "@type" "Organization"
+    "@id" $org
+    "name" site.Params.author.name
+    "url" site.BaseURL
+    "logo" $logo
+    "sameAs" (slice site.Params.org site.Params.github)
+  )
+  (dict
+    "@type" "WebSite"
+    "@id" $web
+    "url" site.BaseURL
+    "name" site.Title
+    "description" site.Params.description
+    "publisher" (dict "@id" $org)
+    "inLanguage" site.Language.Locale
+  )
+  (dict
+    "@type" "SoftwareApplication"
+    "@id" $app
+    "name" site.Title
+    "url" site.BaseURL
+    "applicationCategory" "DeveloperApplication"
+    "operatingSystem" "macOS, Linux, Windows"
+    "license" "https://www.apache.org/licenses/LICENSE-2.0"
+    "softwareVersion" site.Params.version
+    "downloadUrl" (printf "%s/releases" site.Params.github)
+    "sameAs" (slice site.Params.github)
+    "isAccessibleForFree" true
+    "offers" (dict "@type" "Offer" "price" "0" "priceCurrency" "USD")
+    "publisher" (dict "@id" $org)
+    "description" "Open-source coding agent orchestrator that turns issue tracker tickets into autonomous agent sessions."
+  )
+-}}
+{{- /* safeJS is required. Without it Go's html/template treats the contents of
+       any <script> as JavaScript and escapes the JSON into a quoted string, so
+       the block parses as a JSON string rather than an object and every
+       structured-data validator rejects it. */ -}}
+{{- $ld := dict "@context" "https://schema.org" "@graph" $graph | jsonify -}}
+<script type="application/ld+json">{{ $ld | safeJS }}</script>

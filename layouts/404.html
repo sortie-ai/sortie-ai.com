@@ -1,0 +1,16 @@
+{{ define "main" }}
+<section class="hero" aria-labelledby="h-404">
+  <div class="wrap">
+    <span class="eyebrow">404</span>
+    <h1 id="h-404">That page is not here.</h1>
+    <p class="lede">
+      The link may be old, or the page may have moved into the documentation.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="/">Back to the front page</a>
+      <a class="btn btn-ghost" href="{{ site.Params.docs }}">Documentation</a>
+      <a class="btn btn-ghost" href="{{ site.Params.github }}">GitHub</a>
+    </div>
+  </div>
+</section>
+{{ end }}
