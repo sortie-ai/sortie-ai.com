@@ -12,6 +12,17 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Toolchain pins.
+#
+# These used to be read from .tool-versions, but that file cannot live in the
+# repository: Cloudflare Workers Builds parses any .tool-versions in the root
+# and fails at the Installing stage on asdf plugin names its image does not
+# know. The file still exists locally for asdf; keep these three in step with
+# it, and with the HUGO_VERSION build variable in the Cloudflare dashboard.
+env:
+  HUGO_VERSION: "0.164.0"
+  NODE_VERSION: "24.19.0"
+
 jobs:
   build:
     name: Build and check
@@ -24,19 +35,13 @@ jobs:
           # so the failure would be silent.
           fetch-depth: 0
 
-      - name: Read pinned tool versions
-        id: tools
-        run: |
-          echo "hugo=$(grep '^gohugo ' .tool-versions | awk '{print $2}' | sed 's/^extended_//')" >> "$GITHUB_OUTPUT"
-          echo "node=$(grep '^nodejs ' .tool-versions | awk '{print $2}')" >> "$GITHUB_OUTPUT"
-
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ steps.tools.outputs.node }}
+          node-version: ${{ env.NODE_VERSION }}
 
       - uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: ${{ steps.tools.outputs.hugo }}
+          hugo-version: ${{ env.HUGO_VERSION }}
           extended: true
 
       - name: Build

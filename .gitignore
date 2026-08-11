@@ -19,3 +19,15 @@
 .DS_Store
 Thumbs.db
 *.swp
+
+# asdf toolchain pins.
+#
+# Deliberately NOT committed. Cloudflare Workers Builds parses any
+# .tool-versions in the repository root and tries to install every tool named
+# in it; "gohugo extended_0.164.0" is asdf-plugin syntax that its image does
+# not understand, and the build fails at the Installing stage before it ever
+# reaches Hugo. Pin Hugo there with the HUGO_VERSION build variable instead.
+#
+# Versions for local work are documented in README.md; CI pins them in
+# .github/workflows/ci.yml.
+.tool-versions

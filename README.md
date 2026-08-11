@@ -14,7 +14,7 @@
 
 | Component | Details |
 |---|---|
-| **Static site generator** | [Hugo](https://gohugo.io/) `extended_0.164.0`, pinned in `.tool-versions` |
+| **Static site generator** | [Hugo](https://gohugo.io/) `extended_0.164.0` |
 | **Styling** | Hand-written CSS on design tokens, cascade layers, no framework |
 | **Typography** | Inter Variable, self-hosted, latin subset, weight axis only |
 | **JavaScript** | ~150 lines, no dependencies, bundled by `js.Build`, `defer`red |
@@ -26,12 +26,25 @@ There is no Node dependency in the build itself; npm is only used for Wrangler.
 
 ## Prerequisites
 
-Install with [asdf](https://asdf-vm.com/); `.tool-versions` pins the versions.
-
 ```bash
-asdf install
+asdf plugin add gohugo && asdf install gohugo extended_0.164.0
+asdf plugin add nodejs && asdf install nodejs 24.19.0
 hugo version   # must print +extended
 ```
+
+Create a local `.tool-versions` if you use asdf:
+
+```
+gohugo extended_0.164.0
+nodejs 24.19.0
+```
+
+**Do not commit it.** Cloudflare Workers Builds parses any `.tool-versions` in
+the repository root and tries to install every tool named in it; the asdf
+plugin names are not the ones its build image knows, and the build fails at the
+*Installing* stage before it ever reaches Hugo. The file is in `.gitignore` for
+that reason. Hugo's version on Cloudflare comes from the `HUGO_VERSION` build
+variable; CI pins its own copies in `.github/workflows/ci.yml`.
 
 Hugo's **extended** edition is pinned because it carries the LibSass transpiler.
 The site does not currently use Sass, so a plain build would also work today —

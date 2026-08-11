@@ -43,8 +43,8 @@ Sortie landing page. It is a sibling of, not part of, the documentation site.
 
 | Component | Value |
 |---|---|
-| Static site generator | Hugo `extended_0.164.0`, pinned in `.tool-versions` |
-| Toolchain manager | **asdf**. Run `asdf install`; do not use system binaries |
+| Static site generator | Hugo `extended_0.164.0` |
+| Toolchain manager | **asdf**, with a local `.tool-versions` that is **not committed** — see below |
 | Styling | Hand-written CSS on design tokens. **No Tailwind, no framework** |
 | Build output | `public/` |
 | Hosting | **Cloudflare Workers static assets** — not Cloudflare Pages |
@@ -98,6 +98,24 @@ put the "Sortie" wordmark into the SVG: it is HTML text beside the mark.
 
 The etalon's logo was a placeholder — a rounded square with a triangle. It is
 not the Sortie mark. If you see it reappear, something was reverted too far.
+
+### Never commit `.tool-versions`
+
+Cloudflare Workers Builds parses any `.tool-versions` in the repository root
+and tries to install every tool named in it. The asdf plugin names — `gohugo`,
+`golang`, `python` — are not the ones its build image knows, and the build dies
+at the *Installing* stage with `error occurred while installing tools or
+dependencies`, before Hugo is ever invoked. The log line that gives it away is
+`Found a .tool-versions file in repository root`.
+
+This is not documented: Cloudflare's build-image table lists a file only for
+Node, Python and Ruby, and for Hugo lists only the `HUGO_VERSION` environment
+variable. It reads the file anyway.
+
+Version pinning therefore lives in three places that must be kept in step:
+the local, gitignored `.tool-versions`; the `env:` block in
+`.github/workflows/ci.yml`; and the `HUGO_VERSION` build variable in the
+Cloudflare dashboard.
 
 ### Traps that have already caught someone
 
