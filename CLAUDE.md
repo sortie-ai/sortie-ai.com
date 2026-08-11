@@ -1,196 +1,38 @@
-# Mandatory Protocol for AI Agents
+# sortie-ai.com
 
-## Protocol
+A one-page marketing site. Nothing in the build inspects the words or the colours on that page, so the class of regression a test suite would catch elsewhere is caught here only by looking.
 
-### 1. Think Before Coding
+## Commands
 
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
+Read `package.json` scripts before invoking Hugo directly; `.github/workflows/ci.yml` is the gate those scripts have to satisfy.
 
-Before implementing:
-- State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them - don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
+## Gotchas
 
-### 2. Simplicity First
+- **Custom output formats resolve to `home.<format>.<ext>`.** Since Hugo 0.146 there is no `index` template for the home page, so `layouts/index.llmstxt.txt` produces a `WARN` and no file. The documentation site still uses the old spelling because it is pinned to an older Hugo.
+- **Nothing checks for a raw colour literal.** Every shade is a token or a `color-mix` of one, and a literal that slips in will ship silently. The single exception is a mask stop, which reads alpha rather than hue.
+- **Never link a pinned release tag; use `/releases/latest`.** `/releases/tag/1.19.0` is a hard 404 since tags gained a `v` prefix, and `/releases/tag/v1.18.0` returns HTTP 200 with no notes and no assets, so a status-code link checker cannot tell it from a real release.
+- **`SITE_DISPATCH_TOKEN` must exist in three repositories** — this one, `sortie-ai/docs`, and `sortie-ai/sortie`, which sends the release dispatch. Missing from the sender, its `notify-sites` job warns and exits `0` under `continue-on-error`, so the release goes green having notified nobody.
+- **Allowing AI crawlers in `layouts/robots.txt` is deliberate.** The goal is to be cited by answer engines. Each vendor's tokens are split by purpose, so training can be withheld without losing search visibility.
+- **A comment marks code that is not obvious.** It answers "what breaks if I change this", never "what does this do", and three lines is the ceiling. `CORRECTION <sha>:` and `FORK <upstream-path>:` are the two labelled exemptions.
+- **The documentation site's remote is `docs`, not `sortie-docs`,** even though it is usually cloned into a `sortie-docs` directory.
 
-**Minimum code that solves the problem. Nothing speculative.**
+## Boundaries
 
-- No features beyond what was asked.
-- No abstractions for single-use code.
-- No "flexibility" or "configurability" that wasn't requested.
-- If you write 200 lines and it could be 50, rewrite it.
+### Always
 
-### 3. Surgical Changes
+- Run the CI gate locally before calling a change done. Nothing in it reads the page copy, so a reworded sentence ships unchallenged.
 
-**Touch only what you must. Clean up only your own mess.**
+### Ask first
 
-- Don't "improve" adjacent code, comments, or formatting.
-- Match existing style, even if you'd do it differently.
-- Every changed line should trace directly to the request.
+- Rewriting shipped copy. The words on the page are owner-directed; fixing a typo is not the same as improving a sentence.
+- Adding a path to `static/_headers`, or changing the robots.txt crawler policy.
 
-### 4. Goal-Driven Execution
+### Never
 
-**Define success criteria. Loop until verified.**
+- Discard, revert, reset, stash, or reformat uncommitted changes outside your current task's file set - the working tree may hold the user's or a parallel agent's work (see the working-agreement rule).
+- Write a raw colour literal in the stylesheet.
 
-For this repository the success criterion is almost always the same: build the
-site and diff the rendered output against the etalon. See below.
+## Reference docs
 
-## Project Facts
-
-This repository is the source of [sortie-ai.com](https://sortie-ai.com), the
-Sortie landing page. It is a sibling of, not part of, the documentation site.
-
-| Component | Value |
-|---|---|
-| Static site generator | Hugo `extended_0.164.0` |
-| Toolchain manager | **asdf**, with a local `.tool-versions` that is **not committed** — see below |
-| Styling | Hand-written CSS on design tokens. **No Tailwind, no framework** |
-| Build output | `public/` |
-| Hosting | **Cloudflare Workers static assets** — not Cloudflare Pages |
-| Deploy | `npx wrangler deploy`, or `npm run deploy` |
-
-Related repositories: [sortie-ai/sortie](https://github.com/sortie-ai/sortie)
-(the product) and [sortie-ai/docs](https://github.com/sortie-ai/docs) (the
-documentation site — note the remote is `docs`, not `sortie-docs`, even though
-the working copy is usually cloned into a `sortie-docs` directory).
-
-### `src/index.html` is read-only and is the source of truth
-
-The site was rebuilt from a hand-written single-file page, kept at
-`src/index.html` with mode `555`. **Never edit it, and never regenerate it.**
-It is the reference for every word of copy and every design decision.
-
-Before claiming any change is done, verify the visible text still matches:
-
-```bash
-hugo --gc --minify
-# extract the visible text of public/index.html and of src/index.html and diff
-```
-
-The only intended differences are two factual corrections about
-`merge_completion` being opt-in. Everything else must match word for word.
-`.research/etalon-inventory.md` records the full inventory, the six defects
-found in the etalon, and the markup-semantics changes made.
-
-### The palette is brand cyan, not the etalon's orange
-
-The etalon was drawn in a placeholder orange (`#FF7A29`). The real Sortie brand
-is cyan `#00BDFF` on navy `#00112B`, which is what the logo, the favicons and
-the social card use. The BRAND token block in `assets/css/main.css` carries the
-real palette. Do not reintroduce orange.
-
-Every colour in the stylesheet derives from a token. Where the etalon wrote
-`rgba(255,122,41,.35)` the rebuild writes
-`color-mix(in srgb, var(--accent) 35%, transparent)`, which is exactly
-equivalent and actually follows the token. **Never write a raw colour literal**
-— if a new shade is needed, add a token.
-
-### Brand assets come from one vector
-
-`assets/img/icon.svg` is the single source for every icon; `assets/img/logomark.svg`
-is the same mark without the navy plate, inlined into the header and footer.
-Both carry geometry lifted from the brand master `Sortie AI Logo_E.svg`.
-
-Do **not** hand-edit anything in `static/*.png`, `static/favicon.ico` or
-`static/favicon.svg` — run `node scripts/generate-icons.mjs` instead. Do not
-put the "Sortie" wordmark into the SVG: it is HTML text beside the mark.
-
-The etalon's logo was a placeholder — a rounded square with a triangle. It is
-not the Sortie mark. If you see it reappear, something was reverted too far.
-
-### Never commit `.tool-versions`
-
-Cloudflare Workers Builds parses any `.tool-versions` in the repository root
-and tries to install every tool named in it. The asdf plugin names — `gohugo`,
-`golang`, `python` — are not the ones its build image knows, and the build dies
-at the *Installing* stage with `error occurred while installing tools or
-dependencies`, before Hugo is ever invoked. The log line that gives it away is
-`Found a .tool-versions file in repository root`.
-
-This is not documented: Cloudflare's build-image table lists a file only for
-Node, Python and Ruby, and for Hugo lists only the `HUGO_VERSION` environment
-variable. It reads the file anyway.
-
-Version pinning therefore lives in three places that must be kept in step:
-the local, gitignored `.tool-versions`; the `env:` block in
-`.github/workflows/ci.yml`; and the `HUGO_VERSION` build variable in the
-Cloudflare dashboard.
-
-### Traps that have already caught someone
-
-**JSON-LD needs `safeJS`.** Go's `html/template` escapes anything inside a
-`<script>` as JavaScript, turning a `jsonify` result into a quoted string. The
-block then parses as a JSON string, not an object, and validators reject it
-without any build error. See `layouts/_partials/schema.html`.
-
-**Custom output formats resolve to `home.<format>.<ext>`.** Since Hugo 0.146
-there is no `index` template for the home page. `layouts/index.llmstxt.txt`
-produces a `WARN` and no file. The documentation site still uses the old
-spelling because it is pinned to an older Hugo.
-
-**Minify, then fingerprint.** Reversing the order hashes the unminified bytes
-and the filename stops matching what ships.
-
-**The font URL is injected.** `assets/css/main.css` is run through
-`resources.ExecuteAsTemplate` so `@font-face` gets the fingerprinted font URL.
-A literal relative path resolves against the stylesheet's directory and 404s.
-
-**`immutable` caching implies fingerprinting.** `static/_headers` marks
-`/css/*`, `/js/*` and `/fonts/*` immutable for a year. Only add a path there if
-Hugo fingerprints it. `/img/*` is deliberately excluded: the social card's URL
-must stay stable for scrapers.
-
-**Deprecations log at INFO.** Build with `--logLevel info` when auditing, or the
-default level hides them until they have already escalated to errors. CI fails
-on any deprecation notice.
-
-### The release number lives in exactly one place, and stays bare
-
-`params.version` in `hugo.toml`. It feeds the nav chip, the footer text and the
-JSON-LD `softwareVersion`, and it is quoted in `llms.txt`. The etalon hardcoded
-it three times.
-
-**Never put a `v` in it.** Releases from 1.19.0 on carry `v`-prefixed git tags
-(sortie-ai/sortie#792), but the version *number* stays bare everywhere — the
-release is named `sortie 1.19.0` and the binary prints `sortie 1.19.0`. A `v`
-in `params.version` would quietly corrupt four things:
-
-- `softwareVersion` would become `"v1.19.0"`. schema.org types it as free-form
-  `Text`, so **no validator will ever flag it**, and it is invisible on the
-  page. This is the worst of the four precisely because nothing complains.
-- The nav chip, the footer text and the `llms.txt` prose would all read
-  `v1.19.0`, which is the wrong register — and `llms.txt` is consumed by
-  machines that will propagate the malformed string.
-
-The footer therefore links to `/releases/latest`, not to a pinned tag. A pinned
-link has to know which tag convention produced the release it names, and both
-failure modes are nasty: `/releases/tag/1.19.0` is a hard 404 after the switch,
-while `/releases/tag/v1.18.0` returns **HTTP 200 with no release notes and no
-assets** — it is a release-less tag page, because the backfill added `v` tags
-for every past release without moving the Release objects. A status-code link
-checker cannot tell it from the real thing. Verified: the Releases API returns
-404 for `v1.18.0` and 200 with 13 assets for `1.18.0`.
-
-**How the number gets bumped.** `params.version` is a literal, so a rebuild
-alone renders whatever it rendered before — something has to *write* the new
-value first. `.github/workflows/release-sync.yml` is that something: a
-`repository_dispatch` from `sortie-ai/sortie` acts as a doorbell, and the
-version is then read from the Releases API, never from the client payload, so a
-stale, racing or malformed dispatch cannot put a wrong number on the site. Two
-consequences fall out of reading the API: pre-releases are ignored for free
-(GitHub defines "latest" as the most recent non-prerelease, non-draft release,
-and `.goreleaser.yaml` sets `prerelease: auto`), and running the workflow by
-hand is a complete test that no-ops when nothing has changed. Cloudflare Workers
-Builds then deploys the resulting push like any other commit on `main`.
-
-### The robots.txt policy is to allow AI crawlers
-
-Deliberate, not an oversight. This is a marketing site whose goal is to be found
-and cited; blocking the crawlers that feed answer engines removes it from the
-surfaces its audience uses. The named groups in `layouts/robots.txt` are the
-tokens each vendor documents, and they are distinct per purpose — OpenAI
-separates training (`GPTBot`) from search indexing (`OAI-SearchBot`) from
-user-initiated fetches (`ChatGPT-User`), and Anthropic does the same. To
-withhold training while keeping search visibility, disallow `GPTBot`,
-`ClaudeBot`, `CCBot` and `Google-Extended` and leave the rest.
+- `README.md` - stack, prerequisites, commands, layout, brand assets, and the traps that are enforced elsewhere in the tree: `.tool-versions`, `safeJS`, the injected font URL, minify-before-fingerprint and `immutable` caching. Do not restate any of it here.
+- [sortie-ai/sortie](https://github.com/sortie-ai/sortie) - the product. [sortie-ai/docs](https://github.com/sortie-ai/docs) - the documentation site. This repository is a sibling of both, not part of either.
