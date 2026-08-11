@@ -1,11 +1,5 @@
-/* Sortie — sortie-ai.com. Ported from src/index.html (read-only etalon).
-   Rules keep the etalon's original order: same-layer conflicts resolve by
-   source order, so reordering silently changes what wins. Palette and
-   color-mix rules: CLAUDE.md. Markup changes: .research/etalon-inventory.md */
-
 @layer tokens, base, layout, components;
 
-/* FONT — Inter, self-hosted. Latin subset, weight axis only, no italics. */
 @font-face {
   font-family: "Inter";
   font-style: normal;
@@ -20,9 +14,7 @@
 }
 
 @layer tokens {
-  /* DESIGN TOKENS — the six BRAND values drive everything below. */
   :root {
-    /* BRAND */
     --accent: #00bdff;
     --accent-hi: #5ad2ff;
     --accent-ink: #00112b;
@@ -30,7 +22,6 @@
     --info: #7da9ff;
     --warn: #fbbf24;
 
-    /* SURFACES */
     --bg: #00112b;
     --bg-elev: #04182f;
     --surface: #07203a;
@@ -38,33 +29,32 @@
     --line: #102b4a;
     --line-hi: #1a3e63;
 
-    /* INK */
+    --ink-hi: #fff;
     --ink: #edeff2;
     --ink-2: #a5aeb9;
-    /* Lifted from the etalon's #767F8B, which failed AA on four of five
-       surfaces. Measurements: .research/a11y-validation.md */
+    /* Retinted up from #767F8B, which failed AA on four surfaces of five. */
     --ink-3: #808a97;
 
-    /* Retinted orphan literals. Three distinct values because the etalon
-       distinguished them; merging them would be a style change. */
+    /* Three distinct values on purpose; merging them would be a style
+       change, not a cleanup. */
     --code-cm: #41628a; /* comment inside the WORKFLOW.md card */
     --term-t: #476789; /* timestamp column in the log */
     --mark-no: #3f5c7e; /* the minus sign in "Sortie is not" */
 
-    /* Surface variants the etalon also left as orphan literals. */
     --line-hover: #26527f; /* ghost-button border on hover */
     --surface-3: #0e3055; /* copy-button hover fill */
     --dot: #143257; /* the three inert window dots */
     --track: #0a2440; /* progress-bar trough */
     --board-end: #000e22; /* foot of the dispatch-board gradient */
+    --shadow: rgba(0, 0, 0, 0.95); /* drop shadow under the board */
+    --edge: rgba(255, 255, 255, 0.015); /* inset hairline on the board */
+    --tint: rgba(255, 255, 255, 0.014); /* head strip of board and code card */
 
-    /* TYPE */
     --sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
       "Helvetica Neue", Arial, sans-serif;
     --mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", "Cascadia Code",
       Menlo, Consolas, monospace;
 
-    /* METRICS */
     --w: 1180px;
     --r: 12px;
     --r-lg: 16px;
@@ -136,7 +126,6 @@
     padding: 0;
     list-style: none;
   }
-  /* Description lists carry the problem/answer pairs in "What Sortie owns". */
   dl,
   dt,
   dd {
@@ -154,7 +143,7 @@
   }
   ::selection {
     background: color-mix(in srgb, var(--accent) 28%, transparent);
-    color: #fff;
+    color: var(--ink-hi);
   }
 }
 
@@ -182,7 +171,6 @@
 }
 
 @layer components {
-  /* ---------- shared atoms ---------- */
   .eyebrow {
     display: inline-flex;
     align-items: center;
@@ -304,7 +292,6 @@
     }
   }
 
-  /* ================= HEADER ================= */
   .site-header {
     position: sticky;
     top: 0;
@@ -417,7 +404,6 @@
     }
   }
 
-  /* ================= HERO ================= */
   .hero {
     position: relative;
     padding-top: clamp(56px, 8vw, 92px);
@@ -450,6 +436,7 @@
     background-image: linear-gradient(var(--line) 1px, transparent 1px),
       linear-gradient(90deg, var(--line) 1px, transparent 1px);
     background-size: 56px 56px;
+    /* A mask reads alpha, not hue: #000 here means opaque, not black. */
     -webkit-mask-image: radial-gradient(
       720px 420px at 50% 0%,
       #000 0%,
@@ -487,7 +474,6 @@
     font-weight: 550;
   }
 
-  /* install block */
   .install {
     margin-top: 34px;
     max-width: 620px;
@@ -605,15 +591,14 @@
     color: var(--ink-3);
   }
 
-  /* ---- hero visual: dispatch board ---- */
   .board {
     margin-top: clamp(44px, 6vw, 68px);
     border: 1px solid var(--line);
     border-radius: var(--r-lg);
     background: linear-gradient(180deg, var(--bg-elev), var(--board-end));
     overflow: hidden;
-    box-shadow: 0 40px 90px -50px rgba(0, 0, 0, 0.95),
-      0 0 0 1px rgba(255, 255, 255, 0.015) inset;
+    box-shadow: 0 40px 90px -50px var(--shadow),
+      0 0 0 1px var(--edge) inset;
   }
   .board-bar {
     display: flex;
@@ -621,7 +606,7 @@
     gap: 12px;
     padding: 11px 16px;
     border-bottom: 1px solid var(--line);
-    background: rgba(255, 255, 255, 0.014);
+    background: var(--tint);
   }
   .tl {
     display: flex;
@@ -832,7 +817,6 @@
     }
   }
 
-  /* ================= GENERIC SECTION ================= */
   section {
     padding-block: var(--sec);
   }
@@ -840,7 +824,6 @@
     border-top: 1px solid var(--line);
   }
 
-  /* problem grid — a description list of gap and answer */
   .gap-grid {
     display: grid;
     gap: 1px;
@@ -894,7 +877,6 @@
     display: grid;
   }
 
-  /* loop steps */
   .steps {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
@@ -932,7 +914,6 @@
     color: var(--ink);
   }
 
-  /* workflow */
   .wf {
     display: grid;
     grid-template-columns: 1.15fr 0.85fr;
@@ -956,7 +937,7 @@
     gap: 10px;
     padding: 11px 16px;
     border-bottom: 1px solid var(--line);
-    background: rgba(255, 255, 255, 0.014);
+    background: var(--tint);
   }
   .code-card .hd span {
     font-family: var(--mono);
@@ -1013,7 +994,6 @@
     color: var(--ink);
   }
 
-  /* adapters */
   .ad-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -1066,7 +1046,6 @@
     color: var(--ink-2);
   }
 
-  /* tools */
   .tools {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
@@ -1092,7 +1071,6 @@
     color: var(--ink-2);
   }
 
-  /* ops */
   .ops {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -1146,7 +1124,6 @@
     background: var(--line-hi);
   }
 
-  /* is / is not */
   .isnot {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1205,7 +1182,6 @@
     color: var(--mark-no);
   }
 
-  /* audience */
   .aud {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
@@ -1236,7 +1212,6 @@
     color: var(--ink-2);
   }
 
-  /* spec */
   .spec {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -1272,7 +1247,6 @@
     flex-wrap: wrap;
   }
 
-  /* final cta */
   .final {
     text-align: center;
     padding-block: clamp(84px, 11vw, 140px);
@@ -1309,7 +1283,6 @@
     text-align: left;
   }
 
-  /* footer */
   .site-footer {
     border-top: 1px solid var(--line);
     padding-block: 52px 40px;
@@ -1330,8 +1303,7 @@
       grid-template-columns: 1fr;
     }
   }
-  /* <h2>, not the etalon's <h4>: these name four navigation regions.
-     Declarations are the etalon's, so the rendering is unchanged. */
+  /* <h2>, not <h4>: these name four navigation regions. */
   .foot h2 {
     font-size: 12px;
     letter-spacing: 0.1em;
@@ -1371,7 +1343,6 @@
     color: var(--line-hi);
   }
 
-  /* link affordances */
   .ilink {
     color: var(--ink);
     border-bottom: 1px solid var(--line-hi);
@@ -1442,10 +1413,9 @@
     color: var(--accent);
   }
 
-  /* ================= PROSE PAGES (/privacy/, /cookies/) =================
-     Not ported from the etalon. Re-establishes what @layer base reset — p/h1-h4
-     margins, ul/ol list styling — scoped under .prose so the reset still holds
-     everywhere else. Widening the scope changes the landing page. */
+  /* Re-establishes what @layer base reset — p/h1-h4 margins, ul/ol list
+     styling — scoped under .prose so the reset still holds everywhere else.
+     Widening the scope changes the landing page. */
   .prose-page {
     padding-block: clamp(48px, 7vw, 84px) var(--sec);
   }
@@ -1507,7 +1477,6 @@
     display: grid;
     gap: 7px;
   }
-  /* Second-level headings, nested inside the parent <li>. */
   .prose-toc ul ul {
     margin: 7px 0 4px 18px;
   }

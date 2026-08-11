@@ -3,7 +3,6 @@
  * Regenerates every file in static/ from assets/img/icon.svg, the one source
  * of truth. Never hand-edit the outputs; re-run this instead.
  *
- * Run:  node scripts/generate-icons.mjs
  * Needs: @resvg/resvg-js (devDependency) and ImageMagick for the .ico.
  */
 import { Resvg } from "@resvg/resvg-js";
@@ -18,7 +17,6 @@ mkdirSync("static", { recursive: true });
 
 // The two 180px files are deliberately byte-identical: since iOS 7 the
 // -precomposed suffix denotes the same image, and clients still probe for it.
-// Why it is shipped at all: .research/apple-touch-icon.md
 const png = {
   "static/favicon-16x16.png": 16,
   "static/favicon-32x32.png": 32,

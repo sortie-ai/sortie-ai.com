@@ -1,4 +1,3 @@
-/* Ported from src/index.html; defects fixed are listed in .research/etalon-inventory.md */
 (function () {
   "use strict";
 
@@ -46,7 +45,6 @@
     });
   }
 
-  /* install tabs */
   var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
 
   function select(tab) {
@@ -78,19 +76,6 @@
     });
   });
 
-  /* Copy beacon: one same-origin POST whose path names the method copied.
-     POST, not GET — GET is cacheable and undercounts the second click of a
-     session. keepalive is what buys back sendBeacon's survival across unload.
-     Both guards are load-bearing: this runs inside writeText().then(done), so
-     a throw or a rejection falls through to .catch(fallback) and copies twice.
-     Evidence and retest procedure: .research/copy-beacon.md
-
-     CORRECTION 22f087e: that commit's message claims "no cookie, no
-     identifier, no localStorage, no third party". The first two were FALSE for
-     any visitor who had accepted analytics on the docs site — GA4 scopes _ga
-     to the registrable domain and sendBeacon is spec'd credentials-include, so
-     credentials:"omit" here is mandatory, not decoration. Fixed in 5335c44,
-     which has no commit body: this comment is the only in-tree record. */
   var beacon = function (id) {
     try {
       if (id)
@@ -102,7 +87,6 @@
     } catch (e) {}
   };
 
-  /* copy buttons */
   var CHECK =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
 
@@ -152,7 +136,6 @@
     });
   });
 
-  /* scroll reveal */
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var targets = document.querySelectorAll(".rv");
 
