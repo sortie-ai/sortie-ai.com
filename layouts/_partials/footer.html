@@ -1,4 +1,3 @@
-{{- /* Each column is its own named <nav>: four navigation regions, not one. */ -}}
 <footer class="site-footer">
   <div class="wrap">
     <div class="foot">
@@ -42,9 +41,12 @@
     </div>
 
     <div class="legal">
-      <a class="ilink" href="/privacy/">Privacy</a>
-      <span class="sep" aria-hidden="true">·</span>
-      <a class="ilink" href="/cookies/">Cookies</a>
+      <p>&copy; {{ now.Year }} Sortie AI, LLC. All rights reserved.</p>
+      <div class="legal-links">
+        <a class="ilink" href="/privacy/">Privacy</a>
+        <span class="sep" aria-hidden="true">·</span>
+        <a class="ilink" href="/cookies/">Cookies</a>
+      </div>
     </div>
   </div>
 </footer>
