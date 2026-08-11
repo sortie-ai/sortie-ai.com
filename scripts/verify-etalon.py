@@ -36,6 +36,19 @@ ALLOWED: list[tuple[str, str]] = [
         "completion and closed",
         "completion, and can be moved to a terminal state",
     ),
+    # The two pairs below are NOT a factual correction — they are an
+    # owner-directed copy change, a different category from the three above.
+    # The sample WORKFLOW.md prompt was reworded to match the one on the
+    # documentation site: the `## {identifier}: {title}` heading became a
+    # plain `Your task: {title} ({identifier})` line, and the description now
+    # sits under its own `## Context` heading. The etalon is not wrong here;
+    # the copy was deliberately changed after it was written.
+    #
+    # It is one edit but two pairs: the differ anchors on the unchanged
+    # `{{ .issue.identifier }}` run, which survives in the middle of the new
+    # wording, so the rewrite is reported as two opcodes around it.
+    ("##", "Your task: {{ .issue.title }} ("),
+    (": {{ .issue.title }}", ") ## Context"),
 ]
 
 SKIP_TAGS = {"script", "style", "head", "noscript"}
