@@ -1,10 +1,26 @@
 {{- /* /llms.txt per https://llmstxt.org
 
-       Scope note, so nobody over-reads this file: no LLM vendor has published
-       evidence that it consumes llms.txt, and Google Search has said the file
-       neither helps nor harms ranking. It is here because it is nearly free,
-       because Lighthouse now audits for it, and because the real content lives
-       one hop away in the documentation's own far richer llms.txt.
+       This file is for coding agents, not for search. The distinction is not
+       pedantic — it decides whether the file is worth maintaining.
+
+       Jeremy Howard, who wrote the spec, states it plainly: "llms.txt has
+       nothing to do with SEO. It's basically a pre-written CLAUDE.md/AGENTS.md
+       file to help people using stuff like Cursor and Claude Code use your
+       site/product." That describes Sortie's audience exactly, which is why
+       this file earns its place here and would not on a generic marketing site.
+
+       What the evidence says about the SEO framing, so nobody re-adds it:
+       three independent server-log studies — 137,210 domains, and two
+       single-site studies with same-day robots.txt controls — find that AI
+       search crawlers fetch robots.txt, sitemap.xml and HTML while skipping
+       llms.txt. The decisive control: zero AI-bot requests ever arrive at a
+       llms.txt that does not exist. They do not probe for it. They fetch it
+       only when a link, an index, or a user instruction points at it. Google
+       says in its own documentation that the file neither helps nor harms
+       ranking, and no crawler documentation from OpenAI, Anthropic, Google,
+       Microsoft or Perplexity names it as an input.
+
+       So: keep it, keep it linked, and do not expect search traffic from it.
 
        Registered as a custom output format in hugo.toml. */ -}}
 # Sortie

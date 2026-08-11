@@ -21,6 +21,7 @@
        default for an unlisted crawler is already "allowed". */ -}}
 User-agent: *
 Allow: /
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
 
 # OpenAI
 User-agent: GPTBot

@@ -22,6 +22,14 @@
        here and Google's Rich Results Test flags it. sameAs has domainIncludes
        Thing, so it is valid on any type and states the same fact.
 
+       Organization.sameAs names the documentation host as well as GitHub. The
+       two properties are one entity, and sameAs is how that is stated. The
+       @id values below are deliberately anchored on the apex: an Organization
+       and a SoftwareApplication are global identifiers, not per-site URLs, so
+       the documentation site must reuse these exact strings rather than mint
+       its own from its own baseURL. Two different @id values for the same
+       company is how a graph consumer concludes there are two companies.
+
        Note on Go template syntax: a {{ }} action cannot appear between the
        arguments of another action, so comments about individual keys of the
        dict below have to live up here. */ -}}
@@ -39,7 +47,7 @@
     "name" site.Params.author.name
     "url" site.BaseURL
     "logo" $logo
-    "sameAs" (slice site.Params.org site.Params.github)
+    "sameAs" (slice site.Params.org site.Params.github site.Params.docs)
   )
   (dict
     "@type" "WebSite"
