@@ -4,7 +4,9 @@
 # was verified against sortie-docs/content/getting-started/installation.md and
 # the sortie repo's README.md and .goreleaser.yaml.
 #
-# `id` feeds the tab/panel element ids and the aria wiring.
+# `id` feeds the tab/panel element ids, the aria wiring, and the last segment
+# of the copy beacon's path (`/copied/sh`), so it also shows up verbatim in
+# Cloudflare's path-level data. Changing one breaks the continuity of the other.
 # `prompt` is the shell sigil rendered in the accent colour: `$` for POSIX
 # shells, `>` for PowerShell.
 # `label` is the tab caption; `copyLabel` is the button's accessible name and
@@ -33,8 +35,12 @@ tabs:
     command: "go install github.com/sortie-ai/sortie/cmd/sortie@latest"
     copyLabel: "Copy go install command"
 
-# The final call to action repeats the primary method with no tablist.
+# The final call to action repeats the primary method with no tablist. It
+# carries the same `id` as the `sh` tab on purpose: the beacon path names the
+# command that was copied, not the button that was clicked, so both places that
+# offer the install script report as `sh`.
 primary:
+  id: sh
   prompt: "$"
   command: "curl -sSL https://get.sortie-ai.com/install.sh | sh"
   copyLabel: "Copy install command"

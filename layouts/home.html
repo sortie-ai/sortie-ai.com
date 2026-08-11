@@ -467,7 +467,7 @@ You are a senior engineer.
     <div class="install">
       <div class="cmd">
         <pre tabindex="0"><span class="p">{{ hugo.Data.install.primary.prompt }}</span> {{ hugo.Data.install.primary.command }}</pre>
-        {{ partial "copy-button.html" (dict "command" hugo.Data.install.primary.command "label" hugo.Data.install.primary.copyLabel) }}
+        {{ partial "copy-button.html" (dict "command" hugo.Data.install.primary.command "label" hugo.Data.install.primary.copyLabel "event" hugo.Data.install.primary.id) }}
       </div>
     </div>
 

@@ -24,7 +24,7 @@
   {{- range $i, $t := hugo.Data.install.tabs }}
   <div class="cmd" role="tabpanel" id="p-{{ $t.id }}" aria-labelledby="t-{{ $t.id }}"{{ if ne $i 0 }} hidden{{ end }}>
     <pre tabindex="0"><span class="p">{{ $t.prompt }}</span> {{ $t.command }}</pre>
-    {{ partial "copy-button.html" (dict "command" $t.command "label" $t.copyLabel) }}
+    {{ partial "copy-button.html" (dict "command" $t.command "label" $t.copyLabel "event" $t.id) }}
   </div>
   {{- end }}
 
