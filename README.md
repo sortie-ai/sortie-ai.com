@@ -65,7 +65,6 @@ npm run deploy      # build, then wrangler deploy
 ## Layout
 
 ```
-src/index.html          The etalon. Read-only, chmod a-w. Never edit.
 hugo.toml               Config. The release number lives here and nowhere else.
 content/_index.md       Front matter for the home page.
 data/install.yaml       Install commands, one definition per method.
@@ -111,25 +110,11 @@ The mark inherits `currentColor`, so the BRAND token swap recolours it along
 with the rest of the page. `favicon.svg` is real geometry, not a bitmap in an
 SVG wrapper.
 
-### `src/index.html` is the source of truth
-
-The site was rebuilt from a hand-written single-file page. That file is kept,
-read-only, as the reference for the copy and the design. When changing the
-site, diff the rendered output against it:
-
-```bash
-hugo --gc --minify
-# then compare the visible text of public/index.html against src/index.html
-```
-
-The only intended text differences are two factual corrections, documented in
-`.research/etalon-inventory.md`.
-
 ## Things that will bite you
 
 **The release number.** `params.version` in `hugo.toml` is the single place it
-lives. It feeds the nav chip, the footer, the release link and the JSON-LD.
-The etalon had it hardcoded in three places.
+lives. It feeds the nav chip, the JSON-LD `softwareVersion` and `llms.txt`, and
+it stays bare — never a leading `v`.
 
 **Immutable caching.** `static/_headers` marks `/css/*`, `/js/*` and `/fonts/*`
 as `immutable` for a year. That is safe only because Hugo fingerprints those

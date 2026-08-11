@@ -1,9 +1,4 @@
-# Integration grid, verbatim from the etalon. `href` is relative to
-# site.Params.docs.
-#
-# Deliberate omissions, so they are not "fixed": the `file` tracker adapter is
-# for testing; GitLab SCM read is on main but was not in 1.18.0, and belongs
-# under "Code review and CI" when it ships.
+# Integration grid. `href` is relative to site.Params.docs.
 
 groups:
   - id: trackers
