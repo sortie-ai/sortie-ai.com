@@ -1,0 +1,40 @@
+# Cloudflare Workers static assets.
+#
+# This is a Workers project, not a Cloudflare Pages project: the giveaway is
+# [assets] directory below, where a Pages project would carry
+# pages_build_output_dir. Deploy with `npx wrangler deploy`, never
+# `wrangler pages deploy`.
+#
+# Cloudflare's own guidance since April 2025 is to start new projects on
+# Workers; Pages stays supported but receives no new feature investment.
+# https://blog.cloudflare.com/full-stack-development-on-cloudflare-workers/
+
+name = "www"
+compatibility_date = "2026-08-11"
+
+[assets]
+directory = "./public"
+# Serve /404.html for unmatched paths, matching the docs site's behaviour.
+not_found_handling = "404-page"
+
+# Apex domain, declared here rather than clicked in the dashboard so the
+# binding lives in version control.
+#
+# A Custom Domain makes the Worker the origin for every path on the hostname.
+# Cloudflare creates the DNS record and issues an Advanced Certificate itself.
+#
+# Two things to know before the first deploy with this block present:
+#
+#  1. It matches the hostname EXACTLY. www.sortie-ai.com is not covered and
+#     needs its own proxied DNS record plus a redirect rule.
+#  2. If a DNS record already exists for sortie-ai.com, creating the Custom
+#     Domain can fail. Delete that record first, or replace it when the
+#     dashboard offers to.
+#
+# Attaching this while the apex still has a redirect rule is safe: Single
+# Redirects run in http_request_dynamic_redirect, the first request phase, so
+# the redirect keeps winning until you delete it. That is what makes the
+# cutover reversible.
+[[routes]]
+pattern = "sortie-ai.com"
+custom_domain = true

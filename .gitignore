@@ -1,0 +1,21 @@
+# Hugo build output and caches
+/public/
+/resources/_gen/
+/.hugo_build.lock
+
+# Hugo Modules vendor directory
+/_vendor/
+
+# Node
+/node_modules/
+
+# Wrangler
+/.wrangler/
+
+# Research notes produced while building the site
+/.research/
+
+# OS and editor cruft
+.DS_Store
+Thumbs.db
+*.swp

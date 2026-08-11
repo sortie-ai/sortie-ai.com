@@ -1,0 +1,21 @@
+{
+  "name": "sortie-ai-com",
+  "description": "Landing page for Sortie — sortie-ai.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sortie-ai/sortie-ai.com.git"
+  },
+  "private": true,
+  "scripts": {
+    "unshallow": "git fetch --unshallow || true",
+    "prebuild": "npm run unshallow",
+    "build": "hugo --environment production --gc --logLevel info --minify --cleanDestinationDir --printPathWarnings --printMemoryUsage",
+    "server": "hugo server --environment development --logLevel info --buildDrafts --buildFuture --disableFastRender",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "playwright": "^1.62.1",
+    "wrangler": "^4.77.0"
+  }
+}
