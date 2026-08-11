@@ -110,28 +110,65 @@
    * Cloudflare collector already groups by clientRequestPath, so it is counted
    * with no new integration and no new service.
    *
-   * No cookie, no identifier, no localStorage, no third party. Nothing is
-   * stored on the visitor's device and nothing is read from it, which is what
-   * ePrivacy Article 5(3) actually turns on — and the whole reason this exists
-   * instead of GA4 or a tag manager.
+   * CORRECTION to 22f087e, which shipped this using navigator.sendBeacon.
+   * That commit message and this comment both claimed "no cookie, no
+   * identifier, no localStorage, no third party". The first two were FALSE,
+   * for every visitor who had ever accepted analytics consent on the
+   * documentation site.
    *
-   * One caveat worth keeping. sendBeacon is specified with credentials mode
-   * "include", so it would carry a same-origin cookie if one existed. Measured
-   * in a real browser on 2026-08-11: this origin sets none, the cookie jar is
-   * empty, and the request went out with no Cookie header, no Content-Type and
-   * Content-Length: 0. If a cookie is ever introduced here — enabling Bot
-   * Fight Mode sets __cf_bm, for instance — the beacon starts sending it, as
-   * would every stylesheet and font request. If that must not happen, the
-   * replacement is fetch(url, {method:"POST", keepalive:true,
-   * credentials:"omit"}), which measured identically at the edge.
+   * GA4 on docs.sortie-ai.com writes _ga and _ga_<stream> with
+   * Domain=sortie-ai.com — the REGISTRABLE domain, not the docs host, because
+   * that is how a GA4 property spans subdomains. RFC 6265 §5.1.3
+   * domain-matching then sends those cookies to every host beneath it, the
+   * apex included. sendBeacon is specified with credentials mode "include"
+   * and gives no way to turn it off. So the beacon carried the visitor's GA
+   * client ID — a stable identifier, set by a third party, read off their
+   * device — to this origin, on every copy. Measured on the live zone:
    *
-   * Measured against the live zone on 2026-08-11, in headless Chromium, not
-   * with curl (the edge answers a curl-shaped request differently):
+   *   POST https://sortie-ai.com/copied/sh
+   *   Cookie: _ga=GA1.1.1417657273.1786473211; _ga_58VR448EJK=GS2.1.s17864...
    *
-   *   - sendBeacon POSTs, and Workers static assets answer POST with 405 and
-   *     an EMPTY body — for existing files too, so this is about the method,
-   *     not the path. not_found_handling = "404-page" is GET-only, so the
-   *     beacon never drags down the 7.7 KB 404 page. A GET beacon does.
+   * The measurement that missed it is the lesson, so it is recorded here
+   * rather than deleted. It said "this origin sets none, the cookie jar is
+   * empty" — both true, and both beside the point. The question is never
+   * "does this origin SET a cookie" but "will a cookie be SENT", and the two
+   * answers diverge in exactly one case: a sibling subdomain scoping one to
+   * the registrable domain. The browser used had never visited docs, so it
+   * had nothing to send, and the test confirmed a property of that profile
+   * instead of a property of the code.
+   *
+   * Two tooling traps let a retest fail the same way. Playwright's
+   * request.headers() omits the Cookie header while request.allHeaders()
+   * includes it, so an assertion on the former passes while the cookie is
+   * going out; and the docs consent banner is suppressed under automation by
+   * hideFromBots, so an unmasked run never gets a _ga written at all. Any
+   * retest must mask navigator.webdriver, assert the mask in-page, take
+   * consent on docs first, and read allHeaders().
+   *
+   * Hence fetch with credentials: "omit". The credentials mode is the entire
+   * point of the switch — the same run with credentials: "include" still
+   * carried the cookie, so the API was never the cause. Verified against the
+   * live edge in a browser holding a real _ga: no Cookie header, and
+   * otherwise identical — still POST, still 405 with an empty body, still
+   * uncacheable.
+   *
+   * What is true now, stated narrowly because the last version of this
+   * paragraph overreached: this code stores nothing on the visitor's device,
+   * reads nothing from it, and transmits no identifier — no cookie, no query
+   * string, no body, no localStorage. That is what ePrivacy Article 5(3)
+   * turns on. It says nothing about the rest of the page, and it is a claim
+   * about the request this line makes, not about the origin as a whole:
+   * if a cookie is ever set on sortie-ai.com or on any sibling under it, every
+   * stylesheet, font and page request will still carry it. This beacon will
+   * not.
+   *
+   * Measured against the live zone, in a real browser, not with curl (the
+   * edge answers a curl-shaped request differently):
+   *
+   *   - Workers static assets answer POST with 405 and an EMPTY body — for
+   *     existing files too, so this is about the method, not the path.
+   *     not_found_handling = "404-page" is GET-only, so the beacon never
+   *     drags down the 7.7 KB 404 page. A GET beacon does.
    *   - POST is uncacheable. The same path fetched with GET came back
    *     cf-cache-status: HIT, so a GET beacon would be served from the browser
    *     cache on the second click of a session and undercount.
@@ -145,16 +182,35 @@
    *     would mean adding a Worker script to a site that has none. DevTools
    *     only; no page error, no unhandled rejection, nothing user-visible.
    *
-   * The try/catch is load-bearing, not decoration. done() runs inside
+   * keepalive is what buys back sendBeacon's one real advantage: the request
+   * survives the document being destroyed. Confirmed with the negative
+   * control that makes the claim falsifiable — a POST stalled server-side and
+   * then redirected, so the final hop could only be dispatched after the tab
+   * was gone. keepalive:true delivered it; the same request WITHOUT keepalive
+   * was dropped. (Arrival at a loopback server proves nothing on its own: the
+   * bytes leave before unload even begins, and the control "passes" too.)
+   *
+   * Both guards below are load-bearing, not decoration. done() runs inside
    * writeText().then(done), so anything thrown in here rejects that promise
    * and hands control to .catch(fallback) — the visitor would silently get a
-   * second, textarea-based copy. Telemetry must never cost them the command.
+   * second, textarea-based copy. try/catch covers a synchronous throw (fetch
+   * missing, or refused outright); .catch() covers the rejected promise a
+   * blocked or failed request produces, which try/catch cannot see and which
+   * would otherwise surface as an unhandled rejection. Telemetry must never
+   * cost the visitor the command.
    */
   var beacon = function (id) {
     try {
-      if (id) navigator.sendBeacon("/copied/" + id);
+      if (id)
+        fetch("/copied/" + id, {
+          method: "POST",
+          keepalive: true,
+          credentials: "omit",
+        }).catch(function () {
+          /* Blocked, offline, or refused. The copy already happened. */
+        });
     } catch (e) {
-      /* Blocked, unsupported, or queue full. The copy already happened. */
+      /* Unsupported or refused synchronously. The copy already happened. */
     }
   };
 
