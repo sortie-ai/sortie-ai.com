@@ -62,7 +62,7 @@ keepDocumentTags = true
 # NEVER write a leading `v`. Releases carry v-prefixed git tags from 1.19.0 on,
 # but the number stays bare. schema.org types softwareVersion as free-form
 # Text, so a `v` there is invisible on the page and no validator flags it.
-version = "1.18.0"
+version = "1.19.0"
 
 description = "Open-source coding agent orchestrator. Sortie polls Jira, GitHub, GitLab, Linear or Gitea, gives every ticket an isolated workspace, launches the coding agent you already use, and follows the work through CI, review and merge. It installs as one file. Apache-2.0, no telemetry."
 
