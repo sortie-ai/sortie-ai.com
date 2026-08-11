@@ -1,4 +1,4 @@
-# Hugo build output and caches
+# Hugo output and caches
 /public/
 /resources/_gen/
 /.hugo_build.lock
@@ -12,7 +12,7 @@
 # Wrangler
 /.wrangler/
 
-# Research notes produced while building the site
+# Research notes
 /.research/
 
 # OS and editor cruft
@@ -20,14 +20,8 @@
 Thumbs.db
 *.swp
 
-# asdf toolchain pins.
-#
-# Deliberately NOT committed. Cloudflare Workers Builds parses any
-# .tool-versions in the repository root and tries to install every tool named
-# in it; "gohugo extended_0.164.0" is asdf-plugin syntax that its image does
-# not understand, and the build fails at the Installing stage before it ever
-# reaches Hugo. Pin Hugo there with the HUGO_VERSION build variable instead.
-#
-# Versions for local work are documented in README.md; CI pins them in
-# .github/workflows/ci.yml.
+# NOT committed. Cloudflare Workers Builds parses any root .tool-versions and
+# dies at the Installing stage on asdf plugin names its image does not know,
+# before Hugo runs. Pin Hugo there with the HUGO_VERSION build variable.
+# Keep in step with .github/workflows/ci.yml and the Cloudflare dashboard.
 .tool-versions

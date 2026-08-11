@@ -1,44 +1,21 @@
-{{- /* Structured data as a single @graph so the three nodes cross-reference by
-       @id rather than repeating each other. The etalon shipped a lone
-       SoftwareApplication with no Organization and no WebSite.
+{{- /* One @graph, three nodes cross-referenced by @id. The @id values are
+       anchored on the APEX, not on .Permalink: the docs site must reuse these
+       exact strings, because two @id values for one company is how a graph
+       consumer concludes there are two companies.
 
-       Note on rich results: Google's SoftwareApplication rich result requires
-       name, offers.price and one of aggregateRating or review. Only the first
-       two are present, and inventing a rating would violate Google's
-       structured-data policies, which require markup to be true and to reflect
-       something visible on the page. The block is therefore worth shipping for
-       entity understanding, not for stars in the SERP.
+       The repository URL is sameAs, never codeRepository — the latter's
+       domainIncludes is SoftwareSourceCode, a sibling of SoftwareApplication
+       with no inheritance path, so it is invalid here.
 
-       FAQPage and HowTo are deliberately absent: Google retired both rich
-       result types in 2026.
+       FAQPage and HowTo stay absent: Google retired both rich result types.
+       Rationale and measurements: .research/html-validation.md, seo-audit-2.md.
 
-       softwareVersion is driven by site.Params.version, the single place the
-       release number lives.
-
-       The repository URL is expressed with sameAs, not codeRepository.
-       schema.org declares codeRepository's domainIncludes as SoftwareSourceCode
-       only, and SoftwareSourceCode is a *sibling* of SoftwareApplication under
-       CreativeWork — there is no inheritance path, so the property is invalid
-       here and Google's Rich Results Test flags it. sameAs has domainIncludes
-       Thing, so it is valid on any type and states the same fact.
-
-       Organization.sameAs names the documentation host as well as GitHub. The
-       two properties are one entity, and sameAs is how that is stated. The
-       @id values below are deliberately anchored on the apex: an Organization
-       and a SoftwareApplication are global identifiers, not per-site URLs, so
-       the documentation site must reuse these exact strings rather than mint
-       its own from its own baseURL. Two different @id values for the same
-       company is how a graph consumer concludes there are two companies.
-
-       Note on Go template syntax: a {{ }} action cannot appear between the
-       arguments of another action, so comments about individual keys of the
-       dict below have to live up here. */ -}}
+       Comments about individual dict keys have to live up here: a {{ }} action
+       cannot appear between the arguments of another action. */ -}}
 {{- $org := printf "%s#organization" site.BaseURL -}}
 {{- $web := printf "%s#website" site.BaseURL -}}
 {{- $app := printf "%s#software" site.BaseURL -}}
-{{- /* Organization.logo wants a logo, not the social card. The 512px icon is
-       the largest raster the icon pipeline emits and is square, which is what
-       Google's logo guidance expects. */ -}}
+{{- /* A logo, not the social card: Google's guidance wants a square raster. */ -}}
 {{- $logo := "/android-chrome-512x512.png" | absURL -}}
 {{- $graph := slice
   (dict
@@ -75,9 +52,7 @@
     "description" "Open-source coding agent orchestrator that turns issue tracker tickets into autonomous agent sessions."
   )
 -}}
-{{- /* safeJS is required. Without it Go's html/template treats the contents of
-       any <script> as JavaScript and escapes the JSON into a quoted string, so
-       the block parses as a JSON string rather than an object and every
-       structured-data validator rejects it. */ -}}
+{{- /* safeJS is required. Without it html/template escapes the JSON into a
+       quoted string: valid JSON, wrong shape, no build error. */ -}}
 {{- $ld := dict "@context" "https://schema.org" "@graph" $graph | jsonify -}}
 <script type="application/ld+json">{{ $ld | safeJS }}</script>

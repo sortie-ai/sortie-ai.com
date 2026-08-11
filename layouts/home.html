@@ -30,10 +30,8 @@
       and your agent.
     </p>
 
-    {{- /* The dispatch board is a picture of a running system, not data. It is
-           exposed as a single image with a description so that assistive
-           technology is not walked through four rows of invented ticket
-           titles. */}}
+    {{- /* role="img" on purpose: a picture of a running system, not data.
+           Remove it and AT reads four rows of invented ticket titles. */}}
     <div class="board rv" role="img" aria-label="Illustration of the Sortie dispatch board: four tracker issues running in parallel as agent sessions, with states running, in review, retrying after a CI failure, and merged, plus an orchestrator log.">
       <div class="board-bar">
         <span class="tl" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -123,8 +121,7 @@
       </p>
     </div>
 
-    {{- /* Each row pairs a gap with what closes it, which is what a description
-           list is for. The etalon used two anonymous <div>s. */}}
+    {{- /* dt/dd: each row pairs a gap with what closes it. */}}
     <dl class="gap-grid rv">
       <div class="gap-row">
         <dt class="l">The agent finishes and nobody moves the ticket.</dt>

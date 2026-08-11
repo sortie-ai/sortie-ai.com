@@ -1,10 +1,6 @@
-# Cloudflare Workers static-assets headers.
-#
-# The immutable caching rules below are safe only because every file under
-# these paths is fingerprinted by Hugo — the hash is in the filename, so a
-# changed file is a different URL. Do not extend `immutable` to a path served
-# from static/, where filenames are stable and a year-long cache would strand
-# an edit.
+# `immutable` below is safe only because Hugo fingerprints every file under
+# those paths. Never add a path Hugo does not fingerprint: a stable filename
+# under a year-long cache strands the edit with no visible symptom.
 
 /*
   X-Content-Type-Options: nosniff
@@ -22,16 +18,13 @@
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
 
-# llmstxt.org asks for Markdown. Hugo emits the file as text/plain so that it
-# lands at /llms.txt rather than /llms.md; the correct type is set here.
-# noindex because it restates the page's content for a different reader, and
-# duplicate content is worth avoiding even when it is machine-facing.
+# Hugo emits this as text/plain so it lands at /llms.txt, not /llms.md. The
+# real type is set here. noindex: it duplicates the page for a different reader.
 /llms.txt
   Content-Type: text/markdown; charset=utf-8
   X-Robots-Tag: noindex
 
-# Not immutable: the social card keeps a stable filename on purpose, because
-# every scraper and every already-published link points at it. A week is long
-# enough to be free and short enough that replacing the card takes effect.
+# Deliberately not immutable: the social card's filename is stable because
+# scrapers and published links point at it.
 /img/*
   Cache-Control: public, max-age=604800

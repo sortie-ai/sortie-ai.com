@@ -1,14 +1,9 @@
-# Integration grid, verbatim from the etalon.
+# Integration grid, verbatim from the etalon. `href` is relative to
+# site.Params.docs.
 #
-# `href` is relative to site.Params.docs.
-#
-# Known drift to watch, from a source audit of the sortie repo:
-#   - a sixth tracker adapter, `file`, is registered in
-#     internal/tracker/file/file.go and documented under
-#     guides/use-file-adapter-for-testing/. It is a testing adapter and is
-#     deliberately absent from this marketing grid.
-#   - GitLab SCM read operations have landed on main but were not in 1.18.0.
-#     When they ship, GitLab belongs in the "Code review and CI" group.
+# Deliberate omissions, so they are not "fixed": the `file` tracker adapter is
+# for testing; GitLab SCM read is on main but was not in 1.18.0, and belongs
+# under "Code review and CI" when it ships.
 
 groups:
   - id: trackers

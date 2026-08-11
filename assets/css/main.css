@@ -1,39 +1,18 @@
-/* ==========================================================================
-   Sortie — sortie-ai.com
-   Ported from src/index.html (read-only etalon). Rules appear in the etalon's
-   original order so that same-layer conflicts resolve exactly as they did.
-
-   Three classes of deliberate change, and nothing else:
-
-   1. BRAND tokens now carry the real Sortie palette (cyan on navy) instead of
-      the etalon's placeholder orange. The etalon's own header comment asked
-      for this swap.
-   2. Every colour literal that was a token at some alpha is now a genuine
-      reference via color-mix(). In the etalon these were longhand rgba(), so
-      the promised "swap the BRAND block and everything derives" was false.
-      color-mix(in srgb, C P%, transparent) is exactly equivalent to that
-      colour at alpha P.
-   3. Selectors updated where presentational containers became semantic
-      elements (dl/dt/dd, ul/li). Visual output is unchanged.
-   ========================================================================== */
+/* Sortie — sortie-ai.com. Ported from src/index.html (read-only etalon).
+   Rules keep the etalon's original order: same-layer conflicts resolve by
+   source order, so reordering silently changes what wins. Palette and
+   color-mix rules: CLAUDE.md. Markup changes: .research/etalon-inventory.md */
 
 @layer tokens, base, layout, components;
 
-/* --------------------------------------------------------------------------
-   FONT
-   The etalon named "Inter" first in --sans and set font-feature-settings to
-   cv02/cv03/cv04/ss01 — all four are Inter-specific character variants — but
-   never loaded the font. Self-hosted here so the design renders as authored.
-   Latin subset, weight axis only; the page uses no italics.
-   -------------------------------------------------------------------------- */
+/* FONT — Inter, self-hosted. Latin subset, weight axis only, no italics. */
 @font-face {
   font-family: "Inter";
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  /* Injected by resources.ExecuteAsTemplate in layouts/_partials/head.html so
-     the URL carries the font's own fingerprint. A literal relative path would
-     resolve against the fingerprinted stylesheet's directory and 404. */
+  /* Injected by ExecuteAsTemplate in head.html. A literal relative path
+     resolves against the fingerprinted stylesheet's directory and 404s. */
   src: url("{{ .fontURL }}") format("woff2-variations");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
     U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
@@ -41,11 +20,7 @@
 }
 
 @layer tokens {
-  /* ------------------------------------------------------------------
-     DESIGN TOKENS
-     The six values in the BRAND block drive the palette.
-     Everything else derives from them — and now genuinely does.
-     ------------------------------------------------------------------ */
+  /* DESIGN TOKENS — the six BRAND values drive everything below. */
   :root {
     /* BRAND */
     --accent: #00bdff;
@@ -66,21 +41,12 @@
     /* INK */
     --ink: #edeff2;
     --ink-2: #a5aeb9;
-    /* Lifted from the etalon's #767F8B, which failed WCAG AA on every surface
-       except the page background. Measured contrast, before -> after:
-         --bg      #00112B   4.644 -> 5.381
-         --bg-elev #04182F   4.401 -> 5.098   (footer headings, .about p)
-         --surface #07203A   4.056 -> 4.700   (.code-card .fm, the --- rules)
-         board gradient      4.478 -> 5.188   (.sid, .stok)
-         hero wash           4.318 -> 5.002   (.eyebrow over ::before)
-       All five now clear 4.5:1 for normal text. The three worst cases sit
-       inside a role="img" composite or under a gradient, so no automated
-       checker sees them — they were found by compositing real pixels. */
+    /* Lifted from the etalon's #767F8B, which failed AA on four of five
+       surfaces. Measurements: .research/a11y-validation.md */
     --ink-3: #808a97;
 
-    /* Muted inks the etalon left as orphan literals, retinted to the navy
-       ground. Kept as three distinct values because the etalon distinguished
-       them; merging would be a style change. */
+    /* Retinted orphan literals. Three distinct values because the etalon
+       distinguished them; merging them would be a style change. */
     --code-cm: #41628a; /* comment inside the WORKFLOW.md card */
     --term-t: #476789; /* timestamp column in the log */
     --mark-no: #3f5c7e; /* the minus sign in "Sortie is not" */
@@ -161,11 +127,9 @@
     margin: 0;
     text-wrap: pretty;
   }
-  /* The etalon reset `ul` only, because it contained no ordered list. The loop
-     steps are now an <ol> — they are genuinely sequential — so `ol` must be
-     reset too. Without it the user-agent's 40px padding-left and 16px block
-     margin land inside the bordered strip, and the five-column grid collapses
-     to four cards plus an orphan on a second row. */
+  /* `ol` must stay in this reset. Without it the user agent's 40px
+     padding-left and 16px margin land inside the bordered strip and the loop
+     steps collapse from five columns to four plus an orphan. */
   ul,
   ol {
     margin: 0;
@@ -368,9 +332,8 @@
     letter-spacing: -0.03em;
     font-size: 17px;
   }
-  /* The logomark is 272.92 x 239.12 in its own units — wider than tall, unlike
-     the square placeholder it replaced. Both axes are set explicitly so the
-     box is reserved before the inline SVG paints. */
+  /* Both axes explicit: the mark is 272.92 x 239.12, not square, and the box
+     must be reserved before the inline SVG paints. */
   .brand svg {
     width: 25px;
     height: 22px;
@@ -1367,10 +1330,8 @@
       grid-template-columns: 1fr;
     }
   }
-  /* These are <h2> rather than the etalon's <h4>: they are the accessible
-     names of the four footer navigation regions, and at h4 they skipped two
-     levels below the page's h2 sections. Every declaration is the etalon's,
-     so the rendering is unchanged. */
+  /* <h2>, not the etalon's <h4>: these name four navigation regions.
+     Declarations are the etalon's, so the rendering is unchanged. */
   .foot h2 {
     font-size: 12px;
     letter-spacing: 0.1em;
@@ -1481,10 +1442,221 @@
     color: var(--accent);
   }
 
-  /* reveal
-     Scoped to .js so that the default, script-free state is visible. The
-     etalon hid every section behind opacity:0 and relied on JavaScript to
-     reveal it, which left the page blank if the script never ran. */
+  /* ================= PROSE PAGES (/privacy/, /cookies/) =================
+     Not ported from the etalon. Re-establishes what @layer base reset — p/h1-h4
+     margins, ul/ol list styling — scoped under .prose so the reset still holds
+     everywhere else. Widening the scope changes the landing page. */
+  .prose-page {
+    padding-block: clamp(48px, 7vw, 84px) var(--sec);
+  }
+  /* Narrowed here rather than on the column, so the header and footer keep
+     the site's normal width while the page reads as centred. */
+  .prose-page .wrap {
+    max-width: 880px;
+  }
+  .prose-head {
+    max-width: 68ch;
+  }
+  .prose-head h1 {
+    font-size: clamp(32px, 4.6vw, 50px);
+    margin: 16px 0 0;
+    letter-spacing: -0.03em;
+  }
+  .prose-head .lede {
+    margin-top: 18px;
+  }
+
+  /* Each dt/dd pair is wrapped in a <div> so the grid lays out pairs. */
+  .prose-dates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 32px;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 13.5px;
+  }
+  .prose-dates dt {
+    color: var(--ink-3);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .prose-dates dd {
+    color: var(--ink-2);
+    margin-top: 5px;
+  }
+
+  .prose-toc {
+    margin-top: clamp(36px, 5vw, 52px);
+    padding: 22px 26px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    background: var(--bg-elev);
+    max-width: 68ch;
+  }
+  .prose-toc h2 {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 12px;
+  }
+  .prose-toc ul {
+    display: grid;
+    gap: 7px;
+  }
+  /* Second-level headings, nested inside the parent <li>. */
+  .prose-toc ul ul {
+    margin: 7px 0 4px 18px;
+  }
+  .prose-toc a {
+    font-size: 14.5px;
+    color: var(--ink-2);
+    border-bottom: 1px solid transparent;
+  }
+  .prose-toc a:hover {
+    color: var(--accent);
+    border-bottom-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  }
+
+  .prose {
+    max-width: 68ch;
+    margin-top: clamp(40px, 5vw, 60px);
+    font-size: 16px;
+    color: var(--ink-2);
+  }
+  .prose > * + * {
+    margin-top: 20px;
+  }
+  .prose h2 {
+    font-size: clamp(21px, 2.4vw, 26px);
+    color: var(--ink);
+    margin-top: clamp(44px, 5vw, 60px);
+    padding-top: 26px;
+    border-top: 1px solid var(--line);
+  }
+  .prose h3 {
+    font-size: 17px;
+    color: var(--ink);
+    margin-top: 34px;
+  }
+  .prose h2 + *,
+  .prose h3 + * {
+    margin-top: 14px;
+  }
+  .prose strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .prose a {
+    color: var(--ink);
+    border-bottom: 1px solid var(--line-hi);
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .prose a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .prose ul,
+  .prose ol {
+    display: grid;
+    gap: 10px;
+    padding-left: 22px;
+  }
+  .prose ul {
+    list-style: disc;
+  }
+  .prose ol {
+    list-style: decimal;
+  }
+  .prose li::marker {
+    color: var(--ink-3);
+  }
+  .prose li > ul,
+  .prose li > ol {
+    margin-top: 10px;
+  }
+  .prose code {
+    font-size: 13px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 1px 6px;
+    color: var(--ink);
+  }
+  .prose hr {
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin-block: clamp(36px, 4vw, 48px);
+  }
+
+  /* The wrapper comes from layouts/_markup/render-table.html and is focusable:
+     a region that scrolls by mouse but not by keyboard fails WCAG 2.1.1. */
+  .prose .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--bg-elev);
+  }
+  .prose .table-wrap:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+  .prose caption {
+    caption-side: top;
+    text-align: left;
+    padding: 14px 16px 0;
+    color: var(--ink-3);
+    font-size: 12.5px;
+  }
+  .prose th,
+  .prose td {
+    padding: 11px 16px;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  }
+  .prose th {
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    background: var(--surface);
+  }
+  .prose tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+  .prose td code {
+    white-space: nowrap;
+  }
+
+  /* --info, not --warn: these callouts clarify, they do not warn. */
+  .prose .callout {
+    border: 1px solid color-mix(in srgb, var(--info) 30%, transparent);
+    border-left-width: 3px;
+    border-radius: var(--r);
+    background: color-mix(in srgb, var(--info) 6%, transparent);
+    padding: 18px 20px;
+  }
+  .prose .callout > * + * {
+    margin-top: 12px;
+  }
+  .prose .callout p {
+    font-size: 15px;
+  }
+
+  /* reveal — scoped to .js. Unscope this and a page whose script never runs
+     renders as a blank column. */
   .js .rv {
     opacity: 0;
     transform: translateY(14px);
@@ -1495,9 +1667,7 @@
     opacity: 1;
     transform: none;
   }
-  /* Keyboard focus can enter a section while it is still mid-reveal, leaving
-     the focused control invisible for up to 0.55s. Focus wins over the
-     animation. */
+  /* Focus can enter a section mid-reveal; it must win over the animation. */
   .js .rv:focus-within {
     opacity: 1;
     transform: none;

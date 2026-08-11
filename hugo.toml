@@ -3,35 +3,32 @@ title = "Sortie"
 locale = "en-US"
 defaultContentLanguage = "en"
 
-# Hugo writes public/, which wrangler.toml exposes as the Cloudflare Workers
-# static-assets directory. Deploy with `npx wrangler deploy`.
+# Exposed by wrangler.toml as the Workers static-assets directory.
 publishDir = "public"
 
 # Populates .Lastmod from the git author date, which feeds sitemap.xml.
 # Requires full git history: a shallow clone silently produces no dates.
 enableGitInfo = true
 
-# Emit robots.txt from layouts/robots.txt rather than shipping a static file,
-# so the sitemap URL stays bound to baseURL.
+# Required by layouts/robots.txt; without it no robots.txt is emitted at all.
 enableRobotsTXT = true
 
-# A landing page has no taxonomies and no feed. Disabling these removes empty
-# /tags/ and /categories/ pages that read as thin content, and the RSS files.
+# No taxonomies, no feed: the empty /tags/ and /categories/ pages read as thin
+# content.
 disableKinds = ["taxonomy", "term", "rss"]
 
-# Legacy brute-force URL rewriting, slated for removal upstream. Hugo emits
-# absolute URLs correctly from baseURL without it.
+# Legacy brute-force rewriting, slated for removal upstream. Not needed.
 canonifyURLs = false
 
-# Trim the build to what a static landing page actually serves.
 [outputs]
 home = ["html", "llmstxt"]
 page = ["html"]
 
 # /llms.txt per https://llmstxt.org, rendered by layouts/home.llmstxt.txt.
-# The template name matters: since Hugo 0.146 there is no `index` template for
-# the home page, so a custom output format resolves to `home.<format>.<ext>`.
-# `index.llmstxt.txt` builds with only a WARN and produces no file at all.
+# Since Hugo 0.146 removed the home page's `index` template, the documented
+# spelling for a custom output format is `home.<format>.<ext>`. CORRECTION to
+# an earlier note here: `index.llmstxt.txt` does NOT fail on 0.164.0 — measured
+# 2026-08-11, it resolves and writes a byte-identical /llms.txt with no WARN.
 # mediaType is text/plain so the file lands at /llms.txt; static/_headers then
 # serves it as text/markdown, which is what the spec asks for.
 [outputFormats.llmstxt]
@@ -50,8 +47,7 @@ priority = -1
 lastmod = [":git", "lastmod", ":default"]
 
 [markup.goldmark.renderer]
-# The page copy is authored as HTML in layouts, not Markdown. This only affects
-# any future Markdown page that needs an inline element.
+# For inline HTML in the legal pages' Markdown.
 unsafe = true
 
 [minify]
@@ -62,11 +58,10 @@ keepDocumentTags = true
 
 [params]
 # --- Single source of truth for the release number -------------------------
-# The etalon hardcoded 1.18.0 in three places (JSON-LD, nav chip, footer).
-# Bump it here and nowhere else. Verified against the sortie repo's latest
-# semver tag and CHANGELOG.md heading `## [1.18.0] - 2026-08-09`.
-# Note the tag scheme: both `1.18.0` and `v1.18.0` exist upstream; the
-# unprefixed form is the one CHANGELOG compare links use.
+# Feeds the nav chip, the footer, JSON-LD softwareVersion and llms.txt.
+# NEVER write a leading `v`. Releases carry v-prefixed git tags from 1.19.0 on,
+# but the number stays bare. schema.org types softwareVersion as free-form
+# Text, so a `v` there is invisible on the page and no validator flags it.
 version = "1.18.0"
 
 description = "Open-source coding agent orchestrator. Sortie polls Jira, GitHub, GitLab, Linear or Gitea, gives every ticket an isolated workspace, launches the coding agent you already use, and follows the work through CI, review and merge. It installs as one file. Apache-2.0, no telemetry."
@@ -77,8 +72,7 @@ github = "https://github.com/sortie-ai/sortie"
 org = "https://github.com/sortie-ai"
 
 # --- Social card -----------------------------------------------------------
-# 1200x630 JPEG, byte-identical to the docs site's copy so both properties
-# share one social identity.
+# Byte-identical to the docs site's copy: one social identity across both.
 ogImage = "img/og-image.jpg"
 ogImageAlt = "Sortie — the Sortie wordmark and chevron logomark in cyan on a deep navy field."
 
@@ -86,8 +80,6 @@ ogImageAlt = "Sortie — the Sortie wordmark and chevron logomark in cyan on a d
 name = "Sortie AI"
 
 # --- Navigation ------------------------------------------------------------
-# Declared as menus rather than hardcoded in the templates so that adding a
-# second page costs one entry here and nothing in the markup.
 
 [[menus.main]]
 name = "How it works"

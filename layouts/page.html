@@ -1,0 +1,86 @@
+{{- /* Prose pages (/privacy/, /cookies/). Hugo >= 0.146 resolves a regular
+       page to layouts/page.html; _default/single.html no longer matches
+       anything and renders the bare baseof block with no error. */ -}}
+{{ define "main" }}
+{{- /* Ship guard: "[TO CONFIRM: …]" marks a fact only the owner can supply.
+       warnf, not errorf — unmissable in the log without making the site
+       unbuildable for unrelated work. */ -}}
+{{- range findRE `\[TO CONFIRM: [^\]]*` .RawContent }}
+  {{- warnf "%s: unresolved placeholder — %s]" $.File.Path (substr . 0 90) }}
+{{- end }}
+<article class="prose-page">
+  <div class="wrap">
+
+    <header class="prose-head">
+      <span class="eyebrow">{{ .Params.eyebrow | default "Legal" }}</span>
+      <h1>{{ .Title }}</h1>
+      {{- with .Params.lede }}
+      <p class="lede">{{ . }}</p>
+      {{- end }}
+
+      {{- /* Two dates: when the commitments started binding, and when the file
+             last changed. .Lastmod comes from the git author date, so a shallow
+             clone yields none — package.json runs `git fetch --unshallow`. */ -}}
+      <dl class="prose-dates">
+        {{- with .Params.effective }}
+        <div>
+          <dt>In effect since</dt>
+          {{- /* Raw unless it parses: time.Format errors out on a placeholder,
+                 and the owner sets this date at publication. */ -}}
+          {{- if findRE `^\d{4}-\d{2}-\d{2}$` . }}
+          <dd><time datetime="{{ . }}">{{ time.Format "2 January 2006" . }}</time></dd>
+          {{- else }}
+          <dd>{{ . }}</dd>
+          {{- end }}
+        </div>
+        {{- end }}
+        {{- /* An uncommitted file has no git date, and Go's zero time renders
+               as "1 January 0001" — a wrong date on a legal page. */ -}}
+        {{- if gt .Lastmod.Year 1 }}
+        <div>
+          <dt>Last updated</dt>
+          <dd><time datetime="{{ .Lastmod.Format `2006-01-02` }}">{{ .Lastmod.Format "2 January 2006" }}</time></dd>
+        </div>
+        {{- end }}
+      </dl>
+    </header>
+
+    {{- /* .Fragments.Headings, not .TableOfContents: the latter emits its own
+           <nav id="TableOfContents">, nesting an unnamed landmark inside this
+           named one.
+
+           The tree is rooted at h1, and these pages set their h1 in the
+           template, so the root is a synthetic node with an empty ID. Render it
+           and you get <a href="#"></a> — WCAG H30, flagged by html-validate.
+           Promote past the root when it is that placeholder. */ -}}
+    {{- $tops := .Fragments.Headings }}
+    {{- if and (eq (len $tops) 1) (not (index $tops 0).ID) }}
+      {{- $tops = (index $tops 0).Headings }}
+    {{- end }}
+    {{- with and .Params.toc $tops }}
+    <nav class="prose-toc" aria-labelledby="toc-head">
+      <h2 id="toc-head">On this page</h2>
+      <ul>
+        {{- range . }}
+        <li>
+          <a href="#{{ .ID }}">{{ .Title }}</a>
+          {{- with .Headings }}
+          <ul>
+            {{- range . }}
+            <li><a href="#{{ .ID }}">{{ .Title }}</a></li>
+            {{- end }}
+          </ul>
+          {{- end }}
+        </li>
+        {{- end }}
+      </ul>
+    </nav>
+    {{- end }}
+
+    <div class="prose">
+      {{ .Content }}
+    </div>
+
+  </div>
+</article>
+{{ end }}

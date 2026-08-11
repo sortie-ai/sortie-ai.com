@@ -1,17 +1,8 @@
 # Install commands, verbatim from the Sortie documentation.
 #
-# The etalon repeated these five times, twice identically. Every command below
-# was verified against sortie-docs/content/getting-started/installation.md and
-# the sortie repo's README.md and .goreleaser.yaml.
-#
-# `id` feeds the tab/panel element ids, the aria wiring, and the last segment
-# of the copy beacon's path (`/copied/sh`), so it also shows up verbatim in
-# Cloudflare's path-level data. Changing one breaks the continuity of the other.
-# `prompt` is the shell sigil rendered in the accent colour: `$` for POSIX
-# shells, `>` for PowerShell.
-# `label` is the tab caption; `copyLabel` is the button's accessible name and
-# must stay distinct per method — the etalon had a defect that collapsed them
-# all to one string after first use.
+# `id` is also the last segment of the copy beacon's path (/copied/sh), so it
+# appears verbatim in Cloudflare's path data: renaming one breaks the history.
+# `copyLabel` must stay distinct per method — it is the accessible name.
 
 tabs:
   - id: sh
@@ -35,10 +26,8 @@ tabs:
     command: "go install github.com/sortie-ai/sortie/cmd/sortie@latest"
     copyLabel: "Copy go install command"
 
-# The final call to action repeats the primary method with no tablist. It
-# carries the same `id` as the `sh` tab on purpose: the beacon path names the
-# command that was copied, not the button that was clicked, so both places that
-# offer the install script report as `sh`.
+# Same `id` as the `sh` tab on purpose: the beacon path names the command
+# copied, not the button clicked, so both install-script buttons report as sh.
 primary:
   id: sh
   prompt: "$"

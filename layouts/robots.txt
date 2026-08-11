@@ -1,24 +1,10 @@
 {{- /* Generated, not static, so the sitemap URL stays bound to baseURL.
-       Requires enableRobotsTXT = true.
+       Requires enableRobotsTXT = true. Allowing AI crawlers is deliberate;
+       the policy and how to reverse it are in CLAUDE.md.
 
-       AI crawlers are allowed on purpose. This is a marketing site whose goal
-       is to be found and cited; blocking the crawlers that feed answer engines
-       would remove the site from exactly the surfaces its audience uses. The
-       user-agent tokens below are the ones each vendor documents, and they are
-       distinct per purpose: OpenAI separates training (GPTBot) from search
-       indexing (OAI-SearchBot) from user-initiated fetches (ChatGPT-User), and
-       Anthropic does the same. Blanket-allowing is a deliberate choice; to
-       withhold training while keeping search visibility, disallow GPTBot,
-       ClaudeBot, CCBot and Google-Extended and leave the rest.
-
-       HAZARD, per RFC 9309 section 2.2.1: a crawler obeys exactly one group —
-       the most specific one matching its product token — and ignores the `*`
-       group entirely. Every named group below therefore shadows `User-agent: *`
-       for that crawler. If you ever add a `Disallow` to the `*` group, you
-       must add it to all ten named groups too, or those crawlers will keep
-       fetching the path you just tried to close. The named groups exist to
-       state intent explicitly; they change nothing functionally, because the
-       default for an unlisted crawler is already "allowed". */ -}}
+       HAZARD, RFC 9309 §2.2.1: a crawler obeys exactly ONE group, the most
+       specific match, and ignores `*` entirely. A Disallow added to `*` alone
+       silently does nothing for all ten named crawlers below. */ -}}
 User-agent: *
 Allow: /
 Content-Signal: search=yes, ai-input=yes, ai-train=yes

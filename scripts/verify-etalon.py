@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
-"""Verify the built page still says exactly what the etalon says.
+"""Diff the visible text of public/index.html against the read-only etalon.
 
-`src/index.html` is the read-only source of truth for every word of copy on the
-site. This script extracts the visible text from it and from `public/index.html`
-and diffs them word by word. Any difference that is not in ALLOWED below fails
-the check.
-
-The point is to make copy drift loud. It is very easy to "improve" a sentence
-while editing a template and never notice; this catches that on the next build.
+Makes copy drift loud: it is easy to "improve" a sentence while editing a
+template and never notice. Anything not in ALLOWED fails.
 
 Run:  python3 scripts/verify-etalon.py
 Exit: 0 if the only differences are the sanctioned ones, 1 otherwise.
@@ -24,11 +19,12 @@ ETALON = Path("src/index.html")
 BUILT = Path("public/index.html")
 
 # Sanctioned copy changes, as (etalon text, built text) word-sequence pairs.
+# Each entry needs a reason; unexplained entries are indistinguishable from the
+# drift this script exists to catch.
 #
-# Both correct the same factual error: the etalon claimed Sortie "closes" the
-# issue when the pull request merges. In the source, `merge_completion` is
-# opt-in and default-off, and it transitions the issue to a configured terminal
-# state rather than closing it.
+# Factual correction: the etalon claimed Sortie "closes" the issue on merge.
+# `merge_completion` is opt-in and moves the issue to a configured terminal
+# state instead.
 ALLOWED: list[tuple[str, str]] = [
     ("closes", "can move"),
     ("", "to a terminal state"),
@@ -36,19 +32,15 @@ ALLOWED: list[tuple[str, str]] = [
         "completion and closed",
         "completion, and can be moved to a terminal state",
     ),
-    # The two pairs below are NOT a factual correction — they are an
-    # owner-directed copy change, a different category from the three above.
-    # The sample WORKFLOW.md prompt was reworded to match the one on the
-    # documentation site: the `## {identifier}: {title}` heading became a
-    # plain `Your task: {title} ({identifier})` line, and the description now
-    # sits under its own `## Context` heading. The etalon is not wrong here;
-    # the copy was deliberately changed after it was written.
-    #
-    # It is one edit but two pairs: the differ anchors on the unchanged
-    # `{{ .issue.identifier }}` run, which survives in the middle of the new
-    # wording, so the rewrite is reported as two opcodes around it.
+    # Owner-directed rewording, not a correction: the sample WORKFLOW.md prompt
+    # was matched to the documentation site's. Two pairs for one edit — the
+    # differ anchors on the surviving `{{ .issue.identifier }}` run.
     ("##", "Your task: {{ .issue.title }} ("),
     (": {{ .issue.title }}", ") ## Context"),
+    # An addition: the etalon had no second page to link to. Appended, not
+    # interleaved, which is what keeps it to one opcode. The interpuncts count
+    # as words here — aria-hidden means nothing to a parser.
+    ("", "· Privacy · Cookies"),
 ]
 
 SKIP_TAGS = {"script", "style", "head", "noscript"}

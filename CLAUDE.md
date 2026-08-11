@@ -171,3 +171,26 @@ assets** — it is a release-less tag page, because the backfill added `v` tags
 for every past release without moving the Release objects. A status-code link
 checker cannot tell it from the real thing. Verified: the Releases API returns
 404 for `v1.18.0` and 200 with 13 assets for `1.18.0`.
+
+**How the number gets bumped.** `params.version` is a literal, so a rebuild
+alone renders whatever it rendered before — something has to *write* the new
+value first. `.github/workflows/release-sync.yml` is that something: a
+`repository_dispatch` from `sortie-ai/sortie` acts as a doorbell, and the
+version is then read from the Releases API, never from the client payload, so a
+stale, racing or malformed dispatch cannot put a wrong number on the site. Two
+consequences fall out of reading the API: pre-releases are ignored for free
+(GitHub defines "latest" as the most recent non-prerelease, non-draft release,
+and `.goreleaser.yaml` sets `prerelease: auto`), and running the workflow by
+hand is a complete test that no-ops when nothing has changed. Cloudflare Workers
+Builds then deploys the resulting push like any other commit on `main`.
+
+### The robots.txt policy is to allow AI crawlers
+
+Deliberate, not an oversight. This is a marketing site whose goal is to be found
+and cited; blocking the crawlers that feed answer engines removes it from the
+surfaces its audience uses. The named groups in `layouts/robots.txt` are the
+tokens each vendor documents, and they are distinct per purpose — OpenAI
+separates training (`GPTBot`) from search indexing (`OAI-SearchBot`) from
+user-initiated fetches (`ChatGPT-User`), and Anthropic does the same. To
+withhold training while keeping search visibility, disallow `GPTBot`,
+`ClaudeBot`, `CCBot` and `Google-Extended` and leave the rest.

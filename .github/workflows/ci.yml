@@ -12,13 +12,9 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-# Toolchain pins.
-#
-# These used to be read from .tool-versions, but that file cannot live in the
-# repository: Cloudflare Workers Builds parses any .tool-versions in the root
-# and fails at the Installing stage on asdf plugin names its image does not
-# know. The file still exists locally for asdf; keep these three in step with
-# it, and with the HUGO_VERSION build variable in the Cloudflare dashboard.
+# Pinned here and not in .tool-versions, which cannot be committed: Cloudflare
+# Workers Builds parses it and dies at the Installing stage. Keep in step with
+# the local .tool-versions and the dashboard's HUGO_VERSION.
 env:
   HUGO_VERSION: "0.164.0"
   NODE_VERSION: "24.19.0"
@@ -30,9 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          # enableGitInfo reads the git author date to populate .Lastmod for
-          # sitemap.xml. A shallow clone yields no dates and does not error,
-          # so the failure would be silent.
+          # enableGitInfo drives .Lastmod off the git author date. A shallow
+          # clone yields no dates and does not error.
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
@@ -47,8 +42,8 @@ jobs:
       - name: Build
         run: hugo --gc --minify --logLevel info --printPathWarnings
 
-      # Deprecation notices start life at INFO, so the default log level hides
-      # them until they have already escalated to an error. Fail early instead.
+      # Deprecations log at INFO; the default level hides them until they are
+      # already errors.
       - name: Fail on deprecation notices
         run: |
           hugo --gc --minify --logLevel info 2>&1 | tee build.log
@@ -60,14 +55,10 @@ jobs:
 
       - name: Verify the etalon was not modified
         run: |
-          # src/index.html is the read-only source of truth for the copy and
-          # the design. A change to it must be deliberate and reviewed.
           test "$(stat -c%s src/index.html)" = "60737" \
             || { echo "::error::src/index.html changed size — was that intended?"; exit 1; }
 
       - name: Verify the rendered copy still matches the etalon
-        # Catches copy drift: any wording difference that is not one of the
-        # sanctioned factual corrections fails the build.
         run: python3 scripts/verify-etalon.py
 
       - name: Check required output exists
@@ -76,7 +67,6 @@ jobs:
                    public/sitemap.xml public/site.webmanifest; do
             test -s "$f" || { echo "::error::missing $f"; exit 1; }
           done
-          # Fingerprinted assets: at least one of each must be present.
           ls public/css/*.css public/js/*.js public/fonts/*.woff2 >/dev/null
 
       - name: Validate structured data is an object, not a string
@@ -94,9 +84,7 @@ jobs:
           PY
 
       - name: Validate HTML
-        # .htmlvalidate.json is required, not optional: with no config file
-        # html-validate validates nothing and still exits 0, so this step would
-        # report green while checking no rules at all.
+        # Without .htmlvalidate.json, html-validate checks no rules and exits 0.
         run: |
           test -f .htmlvalidate.json \
             || { echo "::error::.htmlvalidate.json missing — html-validate would silently pass"; exit 1; }

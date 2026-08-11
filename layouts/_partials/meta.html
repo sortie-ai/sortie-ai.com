@@ -1,15 +1,8 @@
-{{- /* Open Graph and X/Twitter cards.
+{{- /* Open Graph and X cards. The image is the docs site's, byte for byte.
 
-       The etalon carried og:type, og:site_name, og:url, og:title,
-       og:description, twitter:card, twitter:title and twitter:description —
-       but no image of any kind, so every share rendered as a bare text card.
-       The image below is the same 1200x630 asset the docs site uses, so both
-       properties present one social identity.
-
-       twitter:image is set explicitly rather than relying on a fallback from
-       og:image: X's current documentation does not state that fallback for the
-       summary_large_image card, and an unverified fallback is not worth a
-       blank preview. */ -}}
+       twitter:image is set explicitly: X's documentation does not state an
+       og:image fallback for summary_large_image, and the failure is a blank
+       preview nobody sees from here. */ -}}
 {{- $ogTitle := cond .IsHome "Sortie · Your issue tracker is already the queue" (printf "%s · %s" .Title site.Title) -}}
 {{- $ogDesc := "Open-source coding agent orchestrator. Installs as one file, with nothing alongside it. Adapters for Jira, GitHub, GitLab, Linear, Gitea and for Claude Code, Codex, Copilot, OpenCode, Kiro. Apache-2.0, no telemetry." -}}
 {{- $twDesc := "Open-source coding agent orchestrator. Installs as one file, with nothing alongside it. Apache-2.0, no telemetry." -}}

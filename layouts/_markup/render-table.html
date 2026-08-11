@@ -1,0 +1,40 @@
+{{- /* Since Hugo 0.146 render hooks live in layouts/_markup/. At the old
+       _default/_markup/ path the hook never fires, Goldmark's default table is
+       emitted, and nothing errors — check the built HTML, not the log.
+
+       tabindex="0" on the wrapper: a box that scrolls by mouse but not by
+       keyboard fails WCAG 2.1.1. Deliberately NOT role="region", which would
+       demand an accessible name these tables get from the prose above. */ -}}
+<div class="table-wrap" tabindex="0">
+  <table
+    {{- range $k, $v := .Attributes }}
+      {{- if $v }}{{ printf " %s=%q" $k $v | safeHTMLAttr }}{{ end }}
+    {{- end }}>
+    {{- with .THead }}
+    <thead>
+      {{- range . }}
+      <tr>
+        {{- range . }}
+        <th scope="col"
+          {{- with .Alignment }}{{ printf " style=%q" (printf "text-align: %s" .) | safeHTMLAttr }}{{ end -}}
+        >{{ .Text }}</th>
+        {{- end }}
+      </tr>
+      {{- end }}
+    </thead>
+    {{- end }}
+    {{- with .TBody }}
+    <tbody>
+      {{- range . }}
+      <tr>
+        {{- range . }}
+        <td
+          {{- with .Alignment }}{{ printf " style=%q" (printf "text-align: %s" .) | safeHTMLAttr }}{{ end -}}
+        >{{ .Text }}</td>
+        {{- end }}
+      </tr>
+      {{- end }}
+    </tbody>
+    {{- end }}
+  </table>
+</div>
