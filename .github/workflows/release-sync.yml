@@ -1,0 +1,133 @@
+name: Release sync
+
+# Bring params.version in hugo.toml up to the latest published Sortie release.
+#
+# Why this workflow has to exist at all: params.version is a literal. A rebuild
+# of this repository — however it is triggered — renders exactly the same
+# number it rendered before. Something has to WRITE the new value first, and
+# this is that something. Cloudflare Workers Builds then deploys the resulting
+# push, which is the path it already takes for every other commit on main.
+#
+# The dispatch is a doorbell, not a message. The version is read from
+# https://api.github.com/repos/sortie-ai/sortie/releases/latest, never from the
+# client payload, so a stale, racing or malformed dispatch cannot put a wrong
+# number on the site. Two useful consequences fall out of that choice:
+#
+#   - Pre-releases are ignored for free. GitHub defines the latest release as
+#     "the most recent non-prerelease, non-draft release", and .goreleaser.yaml
+#     sets `prerelease: auto`, so a 1.19.0-rc.1 release resolves to the previous
+#     stable version, the file already matches, and this workflow no-ops.
+#   - Running it by hand (workflow_dispatch) is a complete test. It needs no
+#     input and, when nothing has changed, it exits without touching the repo.
+
+on:
+  repository_dispatch:
+    # Sent by sortie-ai/sortie .github/workflows/release.yml, job notify-sites.
+    # repository_dispatch only fires for a workflow file that exists on the
+    # default branch — this file has no effect until it is merged to main.
+    types: [sortie-release]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A second release landing while this one is mid-flight would race on the push.
+concurrency:
+  group: release-sync
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    name: Bump params.version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Checked out with the PAT, not GITHUB_TOKEN, so the bump commit is an
+          # ordinary push. A push authored by GITHUB_TOKEN does not start a new
+          # workflow run, which would silently skip ci.yml on the one commit
+          # that changes what the site renders. Whether it would also suppress
+          # the Cloudflare Workers Builds webhook is undocumented either way —
+          # using the PAT means the question never has to be answered.
+          token: ${{ secrets.SITE_DISPATCH_TOKEN }}
+
+      - name: Resolve the latest published release
+        id: release
+        env:
+          # The same PAT, not GITHUB_TOKEN. A fine-grained token "always
+          # include[s] read-only access to all public repositories", so this
+          # read works whatever repositories the token was scoped to; whether a
+          # GITHUB_TOKEN can read a repository outside its own installation is
+          # not something the documentation settles.
+          GH_TOKEN: ${{ secrets.SITE_DISPATCH_TOKEN }}
+          CLAIMED: ${{ github.event.client_payload.version }}
+        run: |
+          set -euo pipefail
+          TAG=$(gh api repos/sortie-ai/sortie/releases/latest --jq '.tag_name')
+
+          # Releases from 1.19.0 on carry a v-prefixed git tag, while the
+          # version number itself stays bare everywhere a human or a machine
+          # reads it. Strip the prefix here and nowhere else; a "v" reaching
+          # params.version would corrupt softwareVersion, the nav chip, the
+          # footer and llms.txt, and no validator would ever flag it.
+          VERSION="${TAG#v}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::latest release tag '${TAG}' does not normalise to a bare X.Y.Z version"
+            exit 1
+          fi
+
+          if [ -n "${CLAIMED}" ] && [ "${CLAIMED}" != "${VERSION}" ]; then
+            echo "::warning::dispatch announced ${CLAIMED} but the latest published release is ${VERSION}; using ${VERSION}"
+          fi
+
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "✓ latest published release is ${VERSION}"
+
+      - name: Rewrite hugo.toml
+        id: rewrite
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          # params.version is the only key in the file that starts a line with
+          # "version = ". Assert that before editing, so a future restructuring
+          # of hugo.toml fails here instead of rewriting the wrong line.
+          count=$(grep -c '^version = "' hugo.toml)
+          if [ "$count" != "1" ]; then
+            echo "::error::expected exactly one '^version = \"' line in hugo.toml, found ${count}"
+            exit 1
+          fi
+
+          current=$(sed -n 's/^version = "\(.*\)"$/\1/p' hugo.toml)
+          if [ "$current" = "$VERSION" ]; then
+            echo "✓ hugo.toml already reads ${VERSION} — nothing to do"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          sed -i "s/^version = \".*\"$/version = \"${VERSION}\"/" hugo.toml
+          grep -qx "version = \"${VERSION}\"" hugo.toml \
+            || { echo "::error::rewrite did not take"; exit 1; }
+
+          echo "✓ params.version ${current} -> ${VERSION}"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "previous=${current}" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push
+        if: ${{ steps.rewrite.outputs.changed == 'true' }}
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+          PREVIOUS: ${{ steps.rewrite.outputs.previous }}
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Stage by name. Never `git add -A`: the checkout is clean here, but
+          # the habit is what keeps an unrelated file out of a release commit.
+          git add hugo.toml
+          git commit \
+            -m "chore: set params.version to ${VERSION}" \
+            -m "sortie ${VERSION} is published upstream. params.version feeds the nav chip, the footer text, the JSON-LD softwareVersion and llms.txt, so the bump is the whole change."
+          git push origin HEAD:refs/heads/main
+          echo "### params.version ${PREVIOUS} -> ${VERSION}" >> "$GITHUB_STEP_SUMMARY"
