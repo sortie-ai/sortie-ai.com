@@ -60,10 +60,14 @@ jobs:
           grep -qE '^version = "[0-9]+\.[0-9]+\.[0-9]+"$' hugo.toml \
             || { echo "::error::params.version must be a bare X.Y.Z"; exit 1; }
 
+      # The policy pages are listed because the docs site's consent banner links
+      # straight at them. A page that stops building takes that link down and
+      # leaves the sitemap, with nothing else in this gate noticing.
       - name: Check required output exists
         run: |
           for f in public/index.html public/404.html public/robots.txt \
-                   public/sitemap.xml public/site.webmanifest; do
+                   public/sitemap.xml public/site.webmanifest \
+                   public/privacy/index.html public/cookies/index.html; do
             test -s "$f" || { echo "::error::missing $f"; exit 1; }
           done
           ls public/css/*.css public/js/*.js public/fonts/*.woff2 >/dev/null
@@ -84,7 +88,10 @@ jobs:
 
       - name: Validate HTML
         # Without .htmlvalidate.json, html-validate checks no rules and exits 0.
+        # These are globs, and it exits 0 while any one of them matches, so a
+        # missing page is skipped here. Existence is the step above's job.
         run: |
           test -f .htmlvalidate.json \
             || { echo "::error::.htmlvalidate.json missing — html-validate would silently pass"; exit 1; }
-          npx --yes html-validate public/index.html public/404.html
+          npx --yes html-validate public/index.html public/404.html \
+            public/privacy/index.html public/cookies/index.html
