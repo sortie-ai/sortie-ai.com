@@ -138,36 +138,15 @@ cookie, but your browser still contacts Google to load the analytics script, so
 Google still sees your IP address and user-agent. That is a property of how the
 tag works, not a loophole we chose. The [cookie page](/cookies/) says more.
 
-<!-- ────────────────────────────────────────────────────────────────────────
-     DELETE-IN-ONE-PLACE BLOCK — the browser-side GitHub star count.
-
-     Delete this entire paragraph, and its twin in content/cookies.md, once
-     the documentation site stops fetching the star count in the browser.
-
-     Status at the time of writing: the fix exists in the sortie-docs working
-     tree (the count is read at build time from data/github.yaml) but is NOT
-     yet deployed — the live site still runs the browser-side fetch. Verified
-     by fetching https://docs.sortie-ai.com/ and finding api.github.com in the
-     shipped HTML. Do not delete this paragraph until that is no longer true.
-     ──────────────────────────────────────────────────────────────────────── -->
-**A star count from GitHub.** The documentation pages show how many stars the
-project has on GitHub, and at present your browser fetches that number from
-GitHub directly when the page loads. That request happens before the cookie
-banner asks you anything, because it stores nothing on your device and is not a
-cookie — but it does mean GitHub sees your IP address and user-agent. We are in
-the process of moving this to build time so the request disappears.
-
 ## Who receives data
 
-Three companies, and it depends which site you are on.
+Two companies, and it depends which site you are on.
 
 **Visitors to sortie-ai.com** — Cloudflare only, as our processor, for serving
 and protecting the site.
 
-**Visitors to docs.sortie-ai.com** — Cloudflare on the same basis; Google, as
-our processor, if and only if you accepted analytics; and GitHub, which
-receives your IP address when your browser fetches the star count described
-above.
+**Visitors to docs.sortie-ai.com** — Cloudflare on the same basis, and Google,
+as our processor, if and only if you accepted analytics.
 
 That is the complete list. We do not sell data, we do not share it with
 advertisers, and there is no advertising on either site.
@@ -183,7 +162,7 @@ has changed before and may change again; if the mechanism we rely on changes,
 we will update this page rather than leave a stale sentence here.
 
 Cloudflare serves both sites from a global network, so a request may be handled
-outside the EU. GitHub is a US company.
+outside the EU.
 
 ## How long we keep things
 
