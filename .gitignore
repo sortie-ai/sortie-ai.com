@@ -1,27 +1,32 @@
+# Please do not use this ignore file to define platform specific files.
+#
+# For these purposes create a global .gitignore file, which is a list of rules
+# for ignoring files in every Git repository on your workstation.
+#
+# https://help.github.com/articles/ignoring-files/#create-a-global-gitignore
+
 # Hugo output and caches
-/public/
-/resources/_gen/
+/public
+/resources/_gen
 /.hugo_build.lock
 
 # Hugo Modules vendor directory
-/_vendor/
+/_vendor
 
 # Node
-/node_modules/
+/node_modules
 
 # Wrangler
-/.wrangler/
+/.wrangler
 
 # Research notes
-/.research/
-
-# OS and editor cruft
-.DS_Store
-Thumbs.db
-*.swp
+/.research
 
 # NOT committed. Cloudflare Workers Builds parses any root .tool-versions and
 # dies at the Installing stage on asdf plugin names its image does not know,
 # before Hugo runs. Pin Hugo there with the HUGO_VERSION build variable.
 # Keep in step with .github/workflows/ci.yml and the Cloudflare dashboard.
 .tool-versions
+
+# Internal Knowledge Base
+/kb
