@@ -128,26 +128,6 @@ three characters or more. If you would rather not contribute it, decline
 analytics; the search itself runs in your browser and works exactly the same
 either way.
 
-<!-- ────────────────────────────────────────────────────────────────────────
-     DELETE-IN-ONE-PLACE BLOCK — the browser-side GitHub star count.
-
-     Twin of the block in content/privacy.md. Delete BOTH, together, once the
-     documentation site stops fetching the star count in the browser.
-
-     Status at the time of writing: fixed in the sortie-docs working tree
-     (build-time value from data/github.yaml) but NOT deployed — the live site
-     still ships the browser-side fetch. Verified by fetching
-     https://docs.sortie-ai.com/ and finding api.github.com in the HTML.
-     ──────────────────────────────────────────────────────────────────────── -->
-## The GitHub star count
-
-Separately from analytics, the documentation pages currently ask GitHub for the
-project's star count when the page loads, and they do it whatever you answered
-on the banner. It stores nothing on your device, which is why it is not gated
-behind consent — but GitHub does see your IP address and user-agent. We are
-moving this to build time, at which point the request stops happening at all and
-this section will be removed.
-
 ## Changing your mind
 
 Your choice is stored for six months, after which you will be asked again.
