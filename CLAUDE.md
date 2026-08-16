@@ -21,6 +21,7 @@ Read `package.json` scripts before invoking Hugo directly; `.github/workflows/ci
 ### Always
 
 - Run the CI gate locally before calling a change done. Nothing in it reads the page copy, so a reworded sentence ships unchallenged.
+- Branch and open a PR. No direct commits to `main`.
 
 ### Ask first
 
