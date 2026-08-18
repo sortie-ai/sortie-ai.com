@@ -2,7 +2,7 @@
 
 # sortie-ai.com
 
-**Source for [sortie-ai.com](https://sortie-ai.com) — the Sortie landing page**
+**Source for [sortie-ai.com](https://sortie-ai.com)**
 
 [Documentation](https://docs.sortie-ai.com) · [Report an Issue](https://github.com/sortie-ai/sortie-ai.com/issues/new) · [Main repository](https://github.com/sortie-ai/sortie)
 
