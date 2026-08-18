@@ -35,41 +35,57 @@ print("" if value is None else value)
 ' "$1"
 }
 
-# The releases endpoint is public, so an anonymous request works. Anonymous
-# requests are limited to 60 per hour keyed on the *client IP*, and build
-# runners share their egress addresses with every other job on the same host.
-# Set GH_TOKEN as a build secret if that limit is ever reached.
-auth=()
-if [ -n "${GH_TOKEN:-}" ]; then
-    auth=(-H "Authorization: Bearer $GH_TOKEN")
-    log "authenticating with GH_TOKEN"
-else
-    log "no GH_TOKEN set - requesting anonymously (60/hour, keyed on this IP)"
-fi
-
 hdr=$(mktemp)
 trap 'rm -f "$hdr"' EXIT
 
-# /releases/latest, not /tags: it skips drafts and pre-releases, so a tag pushed
-# mid-release cannot put an unannounced version on the site. --fail-with-body
-# makes curl exit non-zero on 4xx and 5xx while still printing the body, so the
-# message below can say what GitHub actually objected to.
-body=$(curl -sS --fail-with-body -D "$hdr" \
-            "${auth[@]}" \
-            -H 'Accept: application/vnd.github+json' \
-            -H 'X-GitHub-Api-Version: 2022-11-28' \
-            "https://api.github.com/repos/$REPO/releases/latest") || {
-    status=$(awk 'toupper($1) ~ /^HTTP/ { s = $2 } END { print s }' "$hdr")
-    message=$(json_get message <<<"$body" 2>/dev/null)
-    case "$status" in
-        404) die "GET /repos/$REPO/releases/latest returned 404. Either the repository was renamed, or it has no published non-draft release yet." ;;
-        403|429) die "GET /repos/$REPO/releases/latest returned $status (rate limited or forbidden): ${message:-no message}" ;;
-        *) die "GET /repos/$REPO/releases/latest returned HTTP ${status:-?}: ${message:-no message}" ;;
+# FORK install.sh (latest_tag_via_redirect): the releases/latest HTML endpoint
+# redirects to the tagged release and, unlike the GitHub API, is not rate-limited
+# per IP - which is exactly what breaks on shared build runners. Cloudflare's
+# fleet shares egress addresses, and an anonymous API call from there answers 403
+# whenever another tenant has spent the hour's 60 requests.
+tag=""
+if location=$(curl -fsSI -o /dev/null -w '%{redirect_url}' \
+                   "https://github.com/${REPO}/releases/latest"); then
+    case "$location" in
+        */releases/tag/?*) tag="${location##*/}"; log "resolved ${tag} via the releases/latest redirect" ;;
+        *) log "the redirect did not land on a tag page - falling back to the API" ;;
     esac
-}
+else
+    log "the redirect request failed - falling back to the API"
+fi
 
-tag=$(json_get tag_name <<<"$body")
-[ -n "$tag" ] || die "the response carried no tag_name. It was probably an error object, not a release."
+if [ -z "$tag" ]; then
+    # Anonymous requests to the API are limited to 60 per hour keyed on the
+    # *client IP*, which is the shared address this fallback exists to survive.
+    # Set GH_TOKEN as a build secret if both paths ever fail at once.
+    auth=()
+    if [ -n "${GH_TOKEN:-}" ]; then
+        auth=(-H "Authorization: Bearer $GH_TOKEN")
+        log "authenticating with GH_TOKEN"
+    fi
+
+    # /releases/latest, not /tags: it skips drafts and pre-releases, so a tag
+    # pushed mid-release cannot put an unannounced version on the site.
+    # --fail-with-body makes curl exit non-zero on 4xx and 5xx while still
+    # printing the body, so the message below can say what GitHub objected to.
+    body=$(curl -sS --fail-with-body -D "$hdr" \
+                "${auth[@]}" \
+                -H 'Accept: application/vnd.github+json' \
+                -H 'X-GitHub-Api-Version: 2022-11-28' \
+                "https://api.github.com/repos/$REPO/releases/latest") || {
+        status=$(awk 'toupper($1) ~ /^HTTP/ { s = $2 } END { print s }' "$hdr")
+        message=$(json_get message <<<"$body" 2>/dev/null)
+        case "$status" in
+            404) die "GET /repos/$REPO/releases/latest returned 404. Either the repository was renamed, or it has no published non-draft release yet." ;;
+            403|429) die "GET /repos/$REPO/releases/latest returned $status (rate limited or forbidden): ${message:-no message}" ;;
+            *) die "GET /repos/$REPO/releases/latest returned HTTP ${status:-?}: ${message:-no message}" ;;
+        esac
+    }
+
+    tag=$(json_get tag_name <<<"$body")
+    [ -n "$tag" ] || die "the response carried no tag_name. It was probably an error object, not a release."
+    log "resolved ${tag} via the API"
+fi
 
 # Tags are v-prefixed from 1.19.0 on while the version number stays bare. Strip
 # here and nowhere else: a `v` reaching params.version corrupts softwareVersion,
