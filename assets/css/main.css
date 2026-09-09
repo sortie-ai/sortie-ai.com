@@ -293,33 +293,16 @@
 @layer components {
   /* --- section shell ------------------------------------------------- */
 
+  /* One rule now, not two: changing color or size here moves the eyebrow on
+     the home hero, /privacy/, /cookies/ and 404 at once. */
   .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    font-family: var(--mono);
-    font-size: 11.5px;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
-    color: var(--ink-3);
-  }
-  .eyebrow::before {
-    content: "";
-    width: 18px;
-    height: 1px;
-    background: var(--line-hi);
-  }
-  /* Only the home hero takes the mockup's treatment. /privacy/, /cookies/ and
-     404 share this class and are out of the redesign's scope. */
-  .hero-home .eyebrow {
     display: block;
+    font-family: var(--mono);
     font-size: 12px;
     line-height: 1;
     letter-spacing: 1.15px;
+    text-transform: uppercase;
     color: var(--accent);
-  }
-  .hero-home .eyebrow::before {
-    content: none;
   }
 
   /* 135px of air, the rule, then 135px again. The rule is drawn inside the
@@ -1771,18 +1754,25 @@
   .prose-page {
     padding-block: clamp(48px, 7vw, 84px) var(--sec);
   }
-  /* Narrowed here rather than on the column, so the header and footer keep
-     the site's normal width while the page reads as centred. */
-  .prose-page .wrap {
-    max-width: 880px;
+  /* :has(), not a bare grid (baseline since Dec 2023): a no-TOC page would
+     otherwise auto-place .prose into the rail's own track. It still gets
+     block layout, but not today's 880px-centred width; nothing caps it now. */
+  .prose-page .wrap:has(.prose-toc) {
+    display: grid;
+    grid-template-columns: var(--col) minmax(0, 1fr);
+    column-gap: 54px;
   }
   .prose-head {
+    grid-column: 1 / -1;
     max-width: 68ch;
   }
   .prose-head h1 {
+    font-family: var(--display);
     font-size: clamp(32px, 4.6vw, 50px);
+    font-weight: 500;
+    line-height: 0.986;
     margin: 16px 0 0;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.0143em;
   }
   .prose-head .lede {
     margin-top: 18px;
@@ -1812,17 +1802,22 @@
 
   .prose-toc {
     margin-top: clamp(36px, 5vw, 52px);
-    padding: 22px 26px;
-    border: 1px solid var(--line);
-    border-radius: var(--r-lg);
-    background: var(--bg-elev);
     max-width: 68ch;
+    align-self: start;
+    position: sticky;
+    /* Lines up with the root's own scroll-padding-top (main.css:127), so a
+       clicked heading and the rail's first line rest on the same y. */
+    top: calc(var(--hdr) + 10px);
+    max-height: calc(100dvh - var(--hdr) - 20px);
+    overflow-y: auto;
   }
   .prose-toc h2 {
+    font-family: var(--mono);
     font-size: 12px;
-    letter-spacing: 0.1em;
+    line-height: 16px;
+    letter-spacing: 1.15px;
     text-transform: uppercase;
-    color: var(--ink-3);
+    color: var(--ink-meta);
     margin-bottom: 12px;
   }
   .prose-toc ul {
@@ -1841,6 +1836,25 @@
     color: var(--accent);
     border-bottom-color: color-mix(in srgb, var(--accent) 50%, transparent);
   }
+  /* Below the rail's own collapse width: the TOC returns above the content
+     as a block and resumes its shipped card, sticky dropped. */
+  @media (max-width: 900px) {
+    /* minmax(0, 1fr), not 1fr: the cookies table's nowrap cells give .prose
+       a wide min-content, and a bare 1fr track will not shrink below it. */
+    .prose-page .wrap:has(.prose-toc) {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 22px;
+    }
+    .prose-toc {
+      position: static;
+      max-height: none;
+      overflow-y: visible;
+      padding: 22px 26px;
+      border: var(--hair) solid var(--line);
+      border-radius: var(--r-lg);
+      background: var(--bg-elev);
+    }
+  }
 
   .prose {
     max-width: 68ch;
@@ -1848,15 +1862,34 @@
     font-size: 16px;
     color: var(--ink-2);
   }
+  /* A grid item doesn't collapse margins with its first child, so this
+     would double with h2's own margin-top above (h2's floor already
+     dominates this one at every width, so collapsing never lost anything
+     here). Scoped to the TOC's presence: a no-TOC .prose is a plain block
+     and still needs its own margin-top to collapse normally. */
+  .prose-page .wrap:has(.prose-toc) .prose {
+    margin-top: 0;
+  }
+  @media (max-width: 900px) {
+    /* -22px, not 0: cancels the row-gap above exactly, so the net gap
+       above the first heading still matches the pre-grid collapsed value. */
+    .prose-page .wrap:has(.prose-toc) .prose {
+      margin-top: -22px;
+    }
+  }
   .prose > * + * {
     margin-top: 20px;
   }
   .prose h2 {
+    font-family: var(--display);
     font-size: clamp(21px, 2.4vw, 26px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
     color: var(--ink);
     margin-top: clamp(44px, 5vw, 60px);
     padding-top: 26px;
-    border-top: 1px solid var(--line);
+    border-top: var(--hair) solid var(--line);
   }
   .prose h3 {
     font-size: 17px;
