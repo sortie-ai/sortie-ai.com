@@ -81,26 +81,25 @@ name = "Sortie AI"
 
 # --- Navigation ------------------------------------------------------------
 
+# Four entries, and every url is an in-page fragment. Docs and GitHub are not
+# here: header.html renders them in the right-hand group, and the mobile menu
+# only reveals this group.
 [[menus.main]]
-name = "How it works"
+name = "What it owns"
 url = "/#how"
 weight = 10
 [[menus.main]]
-name = "Configuration"
-url = "/#workflow"
+name = "Your stack"
+url = "/#adapters"
 weight = 20
 [[menus.main]]
-name = "Adapters"
-url = "/#adapters"
+name = "Configuration"
+url = "/#workflow"
 weight = 30
 [[menus.main]]
-name = "Operating it"
+name = "Unattended"
 url = "/#operate"
 weight = 40
-[[menus.main]]
-name = "Docs"
-url = "https://docs.sortie-ai.com"
-weight = 50
 
 [[menus.product]]
 name = "How it works"
@@ -111,13 +110,9 @@ name = "Adapters"
 url = "/#adapters"
 weight = 20
 [[menus.product]]
-name = "Operating it"
-url = "/#operate"
+name = "Configuration"
+url = "/#workflow"
 weight = 30
-[[menus.product]]
-name = "Scope"
-url = "/#scope"
-weight = 40
 
 [[menus.documentation]]
 name = "Installation"
@@ -132,17 +127,9 @@ name = "Guides"
 url = "https://docs.sortie-ai.com/guides/"
 weight = 30
 [[menus.documentation]]
-name = "Concepts"
-url = "https://docs.sortie-ai.com/concepts/"
-weight = 40
-[[menus.documentation]]
 name = "Reference"
 url = "https://docs.sortie-ai.com/reference/"
-weight = 50
-[[menus.documentation]]
-name = "Changelog"
-url = "https://docs.sortie-ai.com/changelog/"
-weight = 60
+weight = 40
 
 [[menus.project]]
 name = "Source"
@@ -153,10 +140,6 @@ name = "Releases"
 url = "https://github.com/sortie-ai/sortie/releases"
 weight = 20
 [[menus.project]]
-name = "Contributing"
-url = "https://github.com/sortie-ai/sortie/blob/main/CONTRIBUTING.md"
-weight = 30
-[[menus.project]]
 name = "Discussions"
 url = "https://github.com/sortie-ai/sortie/discussions"
 weight = 40
@@ -164,3 +147,19 @@ weight = 40
 name = "License"
 url = "https://github.com/sortie-ai/sortie/blob/main/LICENSE"
 weight = 50
+
+# The footer's fourth column. Privacy and Cookies are not here: they live in
+# the legal bar below, and a column that repeated them was the duplication
+# this menu replaces.
+[[menus.resources]]
+name = "Changelog"
+url = "https://docs.sortie-ai.com/changelog/"
+weight = 10
+[[menus.resources]]
+name = "Contributing"
+url = "https://github.com/sortie-ai/sortie/blob/main/CONTRIBUTING.md"
+weight = 20
+[[menus.resources]]
+name = "Architecture"
+url = "https://github.com/sortie-ai/sortie/blob/main/docs/architecture.md"
+weight = 30

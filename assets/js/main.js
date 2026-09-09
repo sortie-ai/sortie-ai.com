@@ -45,34 +45,38 @@
     });
   }
 
-  var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+  /* Grouped per tablist. The page carries two install widgets, and a flat
+     querySelectorAll would let a click in one hide the other's panel. */
+  document.querySelectorAll('[role="tablist"]').forEach(function (list) {
+    var tabs = Array.prototype.slice.call(list.querySelectorAll(".tab"));
 
-  function select(tab) {
-    tabs.forEach(function (t) {
-      var on = t === tab;
-      t.setAttribute("aria-selected", on ? "true" : "false");
-      /* Roving tabindex: exactly one tab is reachable with Tab. */
-      t.setAttribute("tabindex", on ? "0" : "-1");
-      var panel = document.getElementById(t.getAttribute("aria-controls"));
-      if (panel) panel.hidden = !on;
-    });
-  }
+    function select(tab) {
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        /* Roving tabindex: exactly one tab is reachable with Tab. */
+        t.setAttribute("tabindex", on ? "0" : "-1");
+        var panel = document.getElementById(t.getAttribute("aria-controls"));
+        if (panel) panel.hidden = !on;
+      });
+    }
 
-  tabs.forEach(function (t, i) {
-    t.addEventListener("click", function () {
-      select(t);
-    });
-    t.addEventListener("keydown", function (e) {
-      var next = null;
-      if (e.key === "ArrowRight") next = tabs[(i + 1) % tabs.length];
-      else if (e.key === "ArrowLeft")
-        next = tabs[(i - 1 + tabs.length) % tabs.length];
-      else if (e.key === "Home") next = tabs[0];
-      else if (e.key === "End") next = tabs[tabs.length - 1];
-      if (!next) return;
-      e.preventDefault();
-      select(next);
-      next.focus();
+    tabs.forEach(function (t, i) {
+      t.addEventListener("click", function () {
+        select(t);
+      });
+      t.addEventListener("keydown", function (e) {
+        var next = null;
+        if (e.key === "ArrowRight") next = tabs[(i + 1) % tabs.length];
+        else if (e.key === "ArrowLeft")
+          next = tabs[(i - 1 + tabs.length) % tabs.length];
+        else if (e.key === "Home") next = tabs[0];
+        else if (e.key === "End") next = tabs[tabs.length - 1];
+        if (!next) return;
+        e.preventDefault();
+        select(next);
+        next.focus();
+      });
     });
   });
 

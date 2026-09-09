@@ -86,6 +86,29 @@ jobs:
           print('JSON-LD OK:', [n['@type'] for n in data['@graph']])
           PY
 
+
+      # A renamed section id leaves a link that still returns 200 and scrolls
+      # nowhere. No status-code checker, --printPathWarnings or html-validate
+      # rule sees it, and scroll-padding-top makes it look like it worked.
+      - name: Every in-page anchor resolves to an id
+        run: |
+          python3 - <<'PY'
+          import re, sys
+          html = open('public/index.html', encoding='utf-8').read()
+          ids = set(re.findall(r'\bid="([^"]+)"', html))
+          anchors = set()
+          for href in re.findall(r'\bhref="([^"]+)"', html):
+              if href.startswith('#'):
+                  anchors.add(href[1:])
+              elif href.startswith('/#'):
+                  anchors.add(href[2:])
+          if not anchors:
+              sys.exit('::error::no in-page anchors found — the check cannot fail')
+          dead = sorted(a for a in anchors if a and a not in ids)
+          if dead:
+              sys.exit('::error::anchor with no matching id: %s' % ', '.join(dead))
+          print('anchors OK: %d fragment links over %d ids' % (len(anchors), len(ids)))
+          PY
       - name: Validate HTML
         # Without .htmlvalidate.json, html-validate checks no rules and exits 0.
         # These are globs, and it exits 0 while any one of them matches, so a

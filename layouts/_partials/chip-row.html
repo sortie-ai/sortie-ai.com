@@ -1,0 +1,22 @@
+{{- $g := .group }}
+<div class="ad-row{{ if eq $g.id "review" }} ok{{ end }}">
+  <h3 class="ad-title" id="ad-{{ $g.id }}">{{ $g.title }}</h3>
+  <div class="ad-line">
+    <ul class="chips" aria-labelledby="ad-{{ $g.id }}">
+      {{- range $g.items }}
+      <li>
+        {{- if .href }}
+        <a class="chip" href="{{ site.Params.docs }}{{ .href }}"><span class="cg" aria-hidden="true">{{ with resources.Get (printf "img/adapters/%s.svg" .icon) }}{{ .Content | safeHTML }}{{ end }}</span>{{ .name }}</a>
+        {{- else }}
+        <span class="chip"><span class="cg" aria-hidden="true">{{ with resources.Get (printf "img/adapters/%s.svg" .icon) }}{{ .Content | safeHTML }}{{ end }}</span>{{ .name }}</span>
+        {{- end }}
+      </li>
+      {{- end }}
+    </ul>
+    {{- range $g.items }}
+    {{- if .note }}
+    <p class="chip-note">{{ .name }} {{ .note }}</p>
+    {{- end }}
+    {{- end }}
+  </div>
+</div>

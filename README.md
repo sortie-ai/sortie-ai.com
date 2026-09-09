@@ -22,7 +22,7 @@ For a full overview, see the [product documentation](https://docs.sortie-ai.com)
 |---|---|
 | **Static site generator** | [Hugo](https://gohugo.io/) ≥ 0.164.0 (extended) |
 | **Styling** | Hand-written CSS on design tokens, cascade layers, no framework |
-| **Typography** | Inter Variable, self-hosted, latin subset, weight axis only |
+| **Typography** | Inter Variable for body and Stack Sans Headline for display, both self-hosted, latin subset, weight axis only. Stack Sans Headline is licensed SIL OFL-1.1 and its license text sits beside the file in `assets/fonts/`. |
 | **JavaScript** | ~150 lines, no dependencies, bundled by Hugo's `js.Build` |
 | **Deployment** | [Cloudflare Workers](https://developers.cloudflare.com/workers/) (static assets via Wrangler) |
 

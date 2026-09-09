@@ -1,5 +1,5 @@
-{{- $ogTitle := cond .IsHome "Sortie · Your issue tracker is already the queue" (printf "%s · %s" .Title site.Title) -}}
-{{- $ogDesc := "Open-source coding agent orchestrator. Installs as one file, with nothing alongside it. Adapters for Jira, GitHub, GitLab, Linear, Gitea and for Claude Code, Codex, Copilot, OpenCode, Kiro. Apache-2.0, no telemetry." -}}
+{{- $ogTitle := cond .IsHome "Sortie · Tickets in. Pull requests out" (printf "%s · %s" .Title site.Title) -}}
+{{- $ogDesc := "Open-source coding agent orchestrator. Installs as one file, with nothing alongside it. Adapters for Jira, GitHub, GitLab, Linear, Gitea and for Claude Code, Codex, Copilot CLI, OpenCode, Kiro. Apache-2.0, no telemetry." -}}
 {{- $twDesc := "Open-source coding agent orchestrator. Installs as one file, with nothing alongside it. Apache-2.0, no telemetry." -}}
 {{- $img := resources.Get site.Params.ogImage -}}
 <meta property="og:type" content="website">

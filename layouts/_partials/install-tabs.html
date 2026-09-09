@@ -1,23 +1,21 @@
+{{- /* `scope` disambiguates the element ids when the widget appears twice on
+       one page. It never touches `id` from the data file, which is the beacon
+       path segment and must not fork. */ -}}
+{{- $s := .scope | default "" -}}
 <div class="install">
   <div class="tabs" role="tablist" aria-label="Install method">
     {{- range $i, $t := hugo.Data.install.tabs }}
-    <button class="tab" type="button" role="tab" id="t-{{ $t.id }}"
+    <button class="tab" type="button" role="tab" id="t-{{ $s }}{{ $t.id }}"
             aria-selected="{{ if eq $i 0 }}true{{ else }}false{{ end }}"
             tabindex="{{ if eq $i 0 }}0{{ else }}-1{{ end }}"
-            aria-controls="p-{{ $t.id }}">{{ $t.label }}</button>
+            aria-controls="p-{{ $s }}{{ $t.id }}">{{ $t.label }}</button>
     {{- end }}
   </div>
 
   {{- range $i, $t := hugo.Data.install.tabs }}
-  <div class="cmd" role="tabpanel" id="p-{{ $t.id }}" aria-labelledby="t-{{ $t.id }}"{{ if ne $i 0 }} hidden{{ end }}>
+  <div class="cmd" role="tabpanel" id="p-{{ $s }}{{ $t.id }}" aria-labelledby="t-{{ $s }}{{ $t.id }}"{{ if ne $i 0 }} hidden{{ end }}>
     <pre tabindex="0"><span class="p">{{ $t.prompt }}</span> {{ $t.command }}</pre>
     {{ partial "copy-button.html" (dict "command" $t.command "label" $t.copyLabel "event" $t.id) }}
   </div>
   {{- end }}
-
-  <p class="install-alt">
-    Also as a <a class="ilink" href="{{ site.Params.docs }}/guides/use-sortie-in-docker/">container image</a>,
-    and as <a class="ilink" href="{{ site.Params.github }}/releases">release binaries</a>
-    for macOS, Linux and Windows on amd64 and arm64, each with a checksum and an SBOM.
-  </p>
 </div>
