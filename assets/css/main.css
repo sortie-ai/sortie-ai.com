@@ -1226,6 +1226,11 @@
   .rowdiv {
     position: relative;
     height: 29px;
+    /* The connector stroke, read by both the ::after that draws it and the
+       keyframes that ride it. 15, not 14: the mockup's length, and the pixel
+       that overlaps the rule, without which the upward junction reads broken. */
+    --stroke-top: 15px;
+    --stroke-h: 15px;
   }
   .rowdiv::before {
     content: "";
@@ -1248,38 +1253,34 @@
     border-top: var(--hair) solid var(--line);
     border-bottom: 0;
   }
-  .rd-a-down::after {
-    left: 50%;
-    top: 15px;
-    height: 14px;
-    background: var(--accent);
+  .rd-a-up {
+    --stroke-top: 0px;
   }
-  .rd-a-up::after {
+  .rd-a-down::after,
+  .rd-a-up::after,
+  .rd-ok::after {
     left: 50%;
-    top: 0;
-    height: 14px;
+    top: var(--stroke-top);
+    height: var(--stroke-h);
     background: var(--accent);
   }
   .rd-tall {
     height: 46px;
   }
-  .rd-ok::after {
-    left: 0;
-    top: 15px;
-    height: 18px;
-    background: var(--line-ok);
-  }
-  /* The closing bracket's right arm. The mockup wraps every row but the last,
-     and this mirrors the 18px green stub already drawn at the left end. */
+  /* The closing bracket's two arms, drawn as background layers because both
+     pseudo-elements are taken. They run to the foot of the 46px box so the
+     bracket reaches the row below, as every other connector does. */
   .rd-ok {
-    background-image: linear-gradient(var(--line-ok) 0 100%);
-    background-size: var(--hair) 18px;
-    background-position: 100% 15px;
+    background-image:
+      linear-gradient(var(--line) 0 100%),
+      linear-gradient(var(--line) 0 100%);
+    background-size: var(--hair) 31px;
+    background-position: 0 15px, 100% 15px;
     background-repeat: no-repeat;
   }
 
   /* The dot descends one divider at a time: trackers into Sortie, Sortie into
-     the agents, the agents into pull requests. A third of the 3.9s cycle is
+     the agents, the agents into pull requests. A third of the 1.8s cycle is
      the descent, and the two negative delays chain the other two onto it. */
   .rowdiv > i {
     position: absolute;
@@ -1289,28 +1290,29 @@
     border-radius: 50%;
     background: var(--accent);
     opacity: 0;
-    animation: stub-fall 3.9s linear infinite;
+    animation: stub-fall 1.8s linear infinite;
   }
   .rd-a-up > i {
-    animation-delay: -2.6s;
+    animation-delay: -1.2s;
   }
   .rd-ok > i {
-    left: -3px;
-    background: var(--ok);
-    animation-delay: -1.3s;
+    animation-delay: -0.6s;
   }
+  /* Bounded by the stroke, not by the box: the dot enters at the connector's
+     top edge and leaves at its foot, so it never crosses the rule or the air
+     above it. */
   @keyframes stub-fall {
     0% {
-      top: 0;
+      top: var(--stroke-top);
       opacity: 0;
     }
-    8%,
-    26% {
+    10%,
+    23% {
       opacity: 1;
     }
     33%,
     100% {
-      top: calc(100% - 7px);
+      top: calc(var(--stroke-top) + var(--stroke-h) - 7px);
       opacity: 0;
     }
   }
