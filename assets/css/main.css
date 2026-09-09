@@ -1838,6 +1838,15 @@
     color: var(--accent);
     border-bottom-color: color-mix(in srgb, var(--accent) 50%, transparent);
   }
+
+  /* Written by main.js, so scoped to .js like .rv. Weight is the second
+     channel WCAG 1.4.1 needs: an edge marker cannot work here, because the
+     rail's own overflow-y:auto propagates to x and clips a negative offset. */
+  .js .prose-toc a[aria-current] {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
   /* Below the rail's own collapse width: the TOC returns above the content
      as a block and resumes its shipped card, sticky dropped. */
   @media (max-width: 900px) {
@@ -1917,6 +1926,62 @@
     color: var(--accent);
     border-bottom-color: var(--accent);
   }
+
+  /* Section permalink, from layouts/_markup/render-heading.html. In flow, not
+     lifted into a gutter: at 402 the reading column touches the viewport edge
+     and a gutter marker would push scrollWidth past clientWidth. */
+  .prose :is(h2, h3) .hlink {
+    /* --mono and 400 so the glyph is the same mark under an h2 in --display
+       and an h3 in --sans at the base reset's 600. */
+    font-family: var(--mono);
+    font-size: 0.72em;
+    font-weight: 400;
+    /* Padding, not margin: the gap after the heading is the same either way,
+       and as padding it is part of the hit target instead of dead space. */
+    padding-inline: 0.34em;
+    color: var(--ink-3);
+    border-bottom: 0;
+    /* Chrome, not content: without this, selecting a heading on a page people
+       quote from copies the glyph along with the words. */
+    -webkit-user-select: none;
+    user-select: none;
+    transition:
+      opacity 0.15s ease,
+      color 0.15s ease;
+  }
+  /* The hover query hides it, not the base rule: on a touch screen wider
+     than 900px nothing can reveal a hover-only affordance. Idle opacity 0
+     rather than display:none keeps the inline box, so nothing reflows. */
+  @media (hover: hover) {
+    .prose :is(h2, h3) .hlink {
+      opacity: 0;
+    }
+    .prose :is(h2, h3):hover .hlink {
+      opacity: 1;
+    }
+    .prose .hlink:hover {
+      color: var(--accent);
+    }
+  }
+  /* :focus, not :focus-visible: a focused link left at opacity 0 is a hidden
+     focus stop however focus arrived. WCAG 2.4.7. */
+  .prose .hlink:focus {
+    opacity: 1;
+  }
+  /* display:none, so it leaves the tab order too. Below 900px one cookies
+     heading has 7px of slack against this glyph's 19px, so keeping it costs
+     that heading a line; the TOC card above the content already reaches it. */
+  @media (max-width: 900px) {
+    .prose :is(h2, h3) .hlink {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .prose :is(h2, h3) .hlink {
+      transition: none;
+    }
+  }
+
   .prose ul,
   .prose ol {
     display: grid;
