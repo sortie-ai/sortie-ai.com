@@ -1,7 +1,6 @@
-# Integration grid. `href` is relative to site.Params.docs; an item with no
-# `href` renders as an inert chip. `icon` is the basename of a file in
-# assets/img/adapters/. `note` renders as the row's trailing sentence, prefixed
-# with the item name.
+# Integration grid. `href` is relative to site.Params.docs, and blank renders
+# an inert chip. `icon` is the basename of a file in assets/img/adapters/;
+# `note` renders as the row's trailing sentence, prefixed with the item name.
 
 groups:
   - id: trackers

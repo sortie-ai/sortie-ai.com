@@ -1,10 +1,7 @@
-# Install commands, verbatim from the Sortie documentation.
-#
 # `id` is also the last segment of the copy beacon's path (/copied/sh), so it
 # appears verbatim in Cloudflare's path data: renaming one breaks the history.
-# The path names the command copied, not the button clicked, which is why the
-# hero and the closing band share these four ids rather than minting new ones.
-# `copyLabel` must stay distinct per method — it is the accessible name.
+# It names the command copied, which is why the hero and closing band share it.
+# `copyLabel` must stay distinct per method: it is the accessible name.
 
 tabs:
   - id: sh

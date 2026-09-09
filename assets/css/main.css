@@ -44,19 +44,19 @@
     --bg-elev: #04162c;
     --surface: #091b37;
     --surface-2: #0a1d3b;
-    --surface-3: #061c36; /* copy-button and chip hover fill */
-    --surface-code: #020f22; /* dispatch board and config card plate */
-    --surface-log: #010b1b; /* log panel inside the dispatch board */
-    --surface-cta: #031633; /* the closing call-to-action band */
-    --surface-mark: #152840; /* the marked line inside the config card */
-    --wash-chevron: #0d2243; /* far end of the chevron watermark gradient */
+    --surface-3: #061c36;
+    --surface-code: #020f22;
+    --surface-log: #010b1b;
+    --surface-cta: #031633;
+    --surface-mark: #152840;
+    --wash-chevron: #0d2243;
 
     --line: #14314f;
     --line-hi: #1a3e63;
-    --line-hover: #3a5878; /* every hover border */
-    --line-dim: #0c2340; /* board row borders and progress troughs */
-    --line-ok: #1f4a38; /* green-tinted border on done and available states */
-    --rule: #0a213d; /* the rules between sections */
+    --line-hover: #3a5878;
+    --line-dim: #0c2340;
+    --line-ok: #1f4a38;
+    --rule: #0a213d;
     --grid-faint: color-mix(in srgb, var(--line) 20%, transparent);
 
     --ink-hi: #fff;
@@ -64,12 +64,12 @@
     --ink-2: #98a6b5;
     /* Retinted up from #767F8B, which failed AA on four surfaces of five. */
     --ink-3: #808a97;
-    --ink-code: #c6d0db; /* command text, tab and chip labels */
-    --ink-meta: #8fa0b2; /* version chip, meta labels, copyright */
+    --ink-code: #c6d0db;
+    --ink-meta: #8fa0b2;
     /* 4.77:1 on --bg and 4.87:1 on --surface-code, its two drawn surfaces.
        It drops to 4.25:1 on --surface-2, so it must not move onto a lifted
        surface without a retint. */
-    --ink-faint: #6e829a; /* footer headings, log stamps, config-card gutter */
+    --ink-faint: #6e829a;
     /* The mockup's #807A96 lifted 10 units per channel, hue held. At the
        drawn value the de-emphasised clause reads 2.76:1 on the hero wash
        peak, under the 3:1 large-text floor. See .research/a11y-validation.md. */
@@ -233,9 +233,9 @@
   .washes.vgrid::after {
     top: 0;
     bottom: 0;
-    /* One layer above the shared 0. As a <body> ::after this box was last in
-       tree order and so drew over .final's opaque band; from here it does that
-       again, and still sits under every .wrap. */
+    /* One layer above the shared 0: needed to draw over .final's opaque band.
+       Equal to .wrap's own z-index, so document order keeps it under every
+       .wrap. */
     z-index: 1;
     background-image:
       linear-gradient(
@@ -290,8 +290,6 @@
 }
 
 @layer components {
-  /* --- section shell ------------------------------------------------- */
-
   /* One rule now, not two: changing color or size here moves the eyebrow on
      the home hero, /privacy/, /cookies/ and 404 at once. */
   .eyebrow {
@@ -358,7 +356,6 @@
     font-size: clamp(28px, 2.8vw, 40px);
     line-height: 1.1;
   }
-  /* The trailing clause of every section heading, and the hero's first line. */
   .dim {
     color: var(--ink-mute);
   }
@@ -405,8 +402,6 @@
     }
   }
 
-  /* The only status dot outside the dispatch board rows. It means one thing:
-     a run is live right now. */
   .live {
     width: 5px;
     height: 5px;
@@ -566,8 +561,6 @@
     }
   }
 
-  /* --- hero ----------------------------------------------------------- */
-
   .hero {
     position: relative;
     padding-top: clamp(48px, 6.2vw, 89px);
@@ -654,8 +647,6 @@
       gap: 40px;
     }
   }
-
-  /* --- install widget -------------------------------------------------- */
 
   .install {
     width: 600px;
@@ -771,8 +762,6 @@
       border-bottom-color: var(--accent);
     }
   }
-
-  /* --- dispatch board --------------------------------------------------- */
 
   .board {
     background: var(--surface-code);
@@ -968,8 +957,6 @@
     color: var(--ink-meta);
   }
 
-  /* --- section body, shared by 01 to 05 --------------------------------- */
-
   .sec-body {
     min-width: 0;
   }
@@ -980,8 +967,6 @@
     font-size: 16.5px;
     line-height: 1.6;
   }
-
-  /* --- 01 what it owns -------------------------------------------------- */
 
   .flow {
     display: grid;
@@ -1126,8 +1111,6 @@
       display: none;
     }
   }
-
-  /* --- 02 your stack ---------------------------------------------------- */
 
   .stack {
     display: flex;
@@ -1322,8 +1305,6 @@
     }
   }
 
-  /* --- 03 configuration -------------------------------------------------- */
-
   .code-card {
     margin-top: 16px;
     padding-top: 18px;
@@ -1418,8 +1399,6 @@
   .mk .cc {
     color: var(--ink-meta);
   }
-
-  /* --- 04 unattended ------------------------------------------------------ */
 
   .ops {
     display: grid;
@@ -1523,8 +1502,6 @@
     background: var(--accent);
   }
 
-  /* --- 05 the catch ------------------------------------------------------- */
-
   /* The 1px plate showing through the grid gaps is the cell border. */
   .catch {
     display: grid;
@@ -1600,13 +1577,9 @@
     }
   }
 
-  /* --- closing call to action --------------------------------------------- */
-
-  /* 92 + 322 of content + 92 + two borders is the mockup's 508. Both washes
-     are background layers of the band itself, so the band clips them and no
-     pseudo-element has to compete with the grid for a z-index. The radii and
-     the two percentages are fitted to the reference's composited corner
-     pixels; changing the band's height invalidates them. */
+  /* 92 + 322 of content + 92 + two borders is the mockup's 508. Washes are
+     background layers of the band itself, so it clips them with no z-index
+     fight. */
   .final {
     position: relative;
     overflow: hidden;
@@ -1876,11 +1849,9 @@
     font-size: 16px;
     color: var(--ink-2);
   }
-  /* A grid item doesn't collapse margins with its first child, so this
-     would double with h2's own margin-top above (h2's floor already
-     dominates this one at every width, so collapsing never lost anything
-     here). Scoped to the TOC's presence: a no-TOC .prose is a plain block
-     and still needs its own margin-top to collapse normally. */
+  /* Grid items don't collapse margins with their first child, so this
+     avoids doubling with h2's own margin-top above. Scoped to the TOC's
+     presence: a no-TOC .prose is a plain block and still needs the collapse. */
   .prose-page .wrap:has(.prose-toc) .prose {
     margin-top: 0;
   }

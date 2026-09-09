@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 """Fail when a built page's heading ids or levels drift from the baseline.
 
-Goldmark generates a policy page's heading ids from its heading text, so a
-reworded heading silently renames an id and takes every inbound bookmark and
-table-of-contents entry with it. The ids authored in the layouts are the same
-contract by hand. Nothing else in the build compares them against anything.
+Goldmark derives a policy page's heading ids from its heading text, so a
+reworded heading silently renames the id and breaks every inbound bookmark
+and table-of-contents entry. Nothing else in the build catches that.
 
-Pages are discovered by walking a build directory, `public` unless one is
-given, so the check can be pointed at a clean build when a dev server is
-writing `public/`. The check never rewrites the baseline: regenerate it
-deliberately, and only when the rename is intended.
+Root defaults to `public` but can point elsewhere, e.g. a clean build
+while a dev server writes `public/`. The baseline is never rewritten
+automatically; regenerate it only when a rename is intended.
 
     python3 scripts/check-heading-ids.py --check          # CI
     python3 scripts/check-heading-ids.py > scripts/heading-ids-baseline.txt
