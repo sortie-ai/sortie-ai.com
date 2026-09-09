@@ -4,10 +4,12 @@
 <head>
 {{ partial "head.html" . }}
 </head>
-{{/* The grid and washes are landing-page devices tied to the 1180 column.
-     Scoping them here keeps 404 and the legal pages bare, per the spec. */}}
-<body{{ if .IsHome }} class="home{{ if site.Params.verticalGrid }} vgrid{{ end }}"{{ end }}>
+<body>
 <a class="skip" href="#main">Skip to content</a>
+{{/* Landing-page devices tied to the 1180 column, so 404 and the legal pages
+     stay bare. A sibling of the content, never a <body> pseudo-element: an
+     ancestor pseudo-element makes axe abandon color-contrast page-wide. */}}
+{{ if .IsHome }}<div class="washes{{ if site.Params.verticalGrid }} vgrid{{ end }}" aria-hidden="true"></div>{{ end }}
 
 {{ partial "header.html" . }}
 

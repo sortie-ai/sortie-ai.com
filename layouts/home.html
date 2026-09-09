@@ -13,7 +13,7 @@
       </p>
     </div>
 
-    {{ partial "install-tabs.html" (dict "scope" "") }}
+    {{ partial "install-tabs.html" (dict "scope" "" "label" "Install method, top of page") }}
 
     <div class="board rv" tabindex="0" role="img" aria-label="Illustration of the Sortie dispatch board: four tracker issues running in parallel as agent sessions, with states running, in review, retrying after a CI failure, and merged, plus an orchestrator log.">
       <div class="board-bar">
@@ -78,7 +78,7 @@
         {{ partial "arrow.html" }}
       </a>
       <a class="btn btn-ghost" href="{{ site.Params.github }}">GitHub</a>
-      <p class="assure">Free · Apache-2.0 · no registration · no telemetry</p>
+      <p class="assure">Free <span aria-hidden="true">·</span> Apache-2.0 <span aria-hidden="true">·</span> no registration <span aria-hidden="true">·</span> no telemetry</p>
     </div>
   </div>
 </section>
@@ -191,26 +191,26 @@
 
       <ul class="ops">
         <li class="op">
-          <p class="op-t">CI turns red <span class="arw">&#8594;</span> <span class="tail">the failure goes back to the agent</span></p>
+          <p class="op-t">CI turns red <span class="vh">. Result:</span><span class="arw" aria-hidden="true">&#8594;</span> <span class="tail">the failure goes back to the agent</span></p>
           <div class="op-foot" aria-hidden="true">
             <p class="op-tags"><span>CI failed</span><span>Agent</span></p>
             <span class="op-hr h-warn"></span>
           </div>
         </li>
         <li class="op">
-          <p class="op-t">A reviewer comments <span class="arw">&#8594;</span> <span class="tail">routed into the same session</span></p>
+          <p class="op-t">A reviewer comments <span class="vh">. Result:</span><span class="arw" aria-hidden="true">&#8594;</span> <span class="tail">routed into the same session</span></p>
           <div class="op-foot" aria-hidden="true">
             <span class="op-hr h-run"></span>
           </div>
         </li>
         <li class="op">
-          <p class="op-t">Tokens add up <span class="arw">&#8594;</span> <span class="tail">capped per issue, before it overspends</span></p>
+          <p class="op-t">Tokens add up <span class="vh">. Result:</span><span class="arw" aria-hidden="true">&#8594;</span> <span class="tail">capped per issue, before it overspends</span></p>
           <div class="op-foot" aria-hidden="true">
             <span class="op-bar"><span></span></span>
           </div>
         </li>
         <li class="op">
-          <p class="op-t">The process dies <span class="arw">&#8594;</span> <span class="tail">picks up where it stopped</span></p>
+          <p class="op-t">The process dies <span class="vh">. Result:</span><span class="arw" aria-hidden="true">&#8594;</span> <span class="tail">picks up where it stopped</span></p>
           <div class="op-foot" aria-hidden="true">
             <p class="op-tag-ok"><i></i>resumed</p>
             <span class="op-hr h-ok"></span>
@@ -227,10 +227,10 @@
     <div class="sec-body rv">
       <h2 id="h-scope">Free, <span class="dim">and nothing to sign up for.</span></h2>
 
-      <ul class="catch">
+      <ol class="catch">
         <li>
           <a class="cat" href="{{ site.Params.github }}/blob/main/LICENSE">
-            <span class="cat-hd"><span class="cat-n">01</span>{{ partial "arrow-box.html" }}</span>
+            <span class="cat-hd"><span class="cat-n" aria-hidden="true">01</span>{{ partial "arrow-box.html" }}</span>
             <div class="cat-b">
               <h3>Apache-2.0</h3>
               <p>Open-source and free to use, modify, and distribute for everyone.</p>
@@ -239,7 +239,7 @@
         </li>
         <li>
           <a class="cat" href="{{ site.Params.docs }}/getting-started/installation/">
-            <span class="cat-hd"><span class="cat-n">02</span>{{ partial "arrow-box.html" }}</span>
+            <span class="cat-hd"><span class="cat-n" aria-hidden="true">02</span>{{ partial "arrow-box.html" }}</span>
             <div class="cat-b">
               <h3>One binary, no database server</h3>
               <p>Install once. No hosted control plane or extra infrastructure.</p>
@@ -248,7 +248,7 @@
         </li>
         <li>
           <a class="cat" href="{{ site.Params.docs }}/guides/">
-            <span class="cat-hd"><span class="cat-n">03</span>{{ partial "arrow-box.html" }}</span>
+            <span class="cat-hd"><span class="cat-n" aria-hidden="true">03</span>{{ partial "arrow-box.html" }}</span>
             <div class="cat-b">
               <h3>Runs where you run it</h3>
               <p>Deploy on your own machine, a VM, a container, or Kubernetes.</p>
@@ -257,14 +257,14 @@
         </li>
         <li>
           <a class="cat" href="{{ site.Params.github }}/blob/main/docs/decisions/0019-keep-usage-data-on-the-host.md">
-            <span class="cat-hd"><span class="cat-n">04</span>{{ partial "arrow-box.html" }}</span>
+            <span class="cat-hd"><span class="cat-n" aria-hidden="true">04</span>{{ partial "arrow-box.html" }}</span>
             <div class="cat-b">
               <h3>No telemetry, no update check</h3>
               <p>Nothing phones home, and you fully control when to upgrade.</p>
             </div>
           </a>
         </li>
-      </ul>
+      </ol>
     </div>
   </div>
 </section>
@@ -272,7 +272,7 @@
 <section class="final" aria-labelledby="h-final">
   <div class="wrap">
     <h2 id="h-final">Point it at a repository<br>and a label.</h2>
-    {{ partial "install-tabs.html" (dict "scope" "c-") }}
+    {{ partial "install-tabs.html" (dict "scope" "c-" "label" "Install method, end of page") }}
     <div class="cta-row tight">
       <a class="btn btn-primary" href="{{ site.Params.docs }}/getting-started/quick-start/">
         Quick start

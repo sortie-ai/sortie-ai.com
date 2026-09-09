@@ -2,8 +2,10 @@
        one page. It never touches `id` from the data file, which is the beacon
        path segment and must not fork. */ -}}
 {{- $s := .scope | default "" -}}
+{{- /* Two tablists on one page need two names, and the partial cannot know
+       where it is rendered, so the caller says. */ -}}
 <div class="install">
-  <div class="tabs" role="tablist" aria-label="Install method">
+  <div class="tabs" role="tablist" aria-label="{{ .label }}">
     {{- range $i, $t := hugo.Data.install.tabs }}
     <button class="tab" type="button" role="tab" id="t-{{ $s }}{{ $t.id }}"
             aria-selected="{{ if eq $i 0 }}true{{ else }}false{{ end }}"

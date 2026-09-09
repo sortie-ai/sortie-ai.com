@@ -65,31 +65,15 @@
     /* Retinted up from #767F8B, which failed AA on four surfaces of five. */
     --ink-3: #808a97;
     --ink-code: #c6d0db; /* command text, tab and chip labels */
-    /* Same value as --line-hover, and not the same thing: this one is ink,
-       on the config card's line numbers and the board's path separators. */
-    --ink-dim: #3a5878;
     --ink-meta: #8fa0b2; /* version chip, meta labels, copyright */
     /* 4.77:1 on --bg and 4.87:1 on --surface-code, its two drawn surfaces.
        It drops to 4.25:1 on --surface-2, so it must not move onto a lifted
        surface without a retint. */
-    --ink-faint: #6e829a; /* footer column headings, log timestamps */
+    --ink-faint: #6e829a; /* footer headings, log stamps, config-card gutter */
     /* The mockup's #807A96 lifted 10 units per channel, hue held. At the
        drawn value the de-emphasised clause reads 2.76:1 on the hero wash
        peak, under the 3:1 large-text floor. See .research/a11y-validation.md. */
     --ink-mute: #8a84a2;
-
-    /* Three distinct values on purpose; merging them would be a style
-       change, not a cleanup. */
-    --code-cm: #41628a; /* comment inside the WORKFLOW.md card */
-    --term-t: #476789; /* timestamp column in the log */
-    --mark-no: #3f5c7e; /* the minus sign in "Sortie is not" */
-
-    --dot: #143257; /* the three inert window dots */
-    --track: #0a2440; /* progress-bar trough */
-    --board-end: #000e22; /* foot of the dispatch-board gradient */
-    --shadow: rgba(0, 0, 0, 0.95); /* drop shadow under the board */
-    --edge: rgba(255, 255, 255, 0.015); /* inset hairline on the board */
-    --tint: rgba(255, 255, 255, 0.014); /* head strip of board and code card */
 
     --sans:
       "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
@@ -212,11 +196,11 @@
     z-index: 1;
   }
 
-  /* Two full-bleed background layers, both pseudo-elements of <body> because
-     the skip link has to stay the first element inside it. ::before paints
-     before ::after, which is what puts the grid over the washes. */
-  body.home::before,
-  body.home.vgrid::after {
+  /* On a sibling of the content, never a <body> pseudo-element: an ancestor
+     pseudo makes axe abandon color-contrast page-wide. Unpositioned, so both
+     layers size against <body>; ::after puts the grid over the wash. */
+  .washes::before,
+  .washes.vgrid::after {
     content: "";
     position: absolute;
     left: 0;
@@ -227,7 +211,7 @@
 
   /* Sized in vw so the field is the same figure at every width. Pinning it to
      1440 leaves flat fill beyond the shape on a wide screen. */
-  body.home::before {
+  .washes::before {
     top: 0;
     height: 100vw;
     background:
@@ -246,9 +230,13 @@
   /* A background-position percentage resolves against area width minus image
      width, so 50% on a --w tile is the content column's left edge at every
      viewport, and the 472px constant phase-locks the 236px tile to it. */
-  body.home.vgrid::after {
+  .washes.vgrid::after {
     top: 0;
     bottom: 0;
+    /* One layer above the shared 0. As a <body> ::after this box was last in
+       tree order and so drew over .final's opaque band; from here it does that
+       again, and still sits under every .wrap. */
+    z-index: 1;
     background-image:
       linear-gradient(
         to right,
@@ -269,7 +257,7 @@
 
   /* The 402 artboard draws no column grid. */
   @media (max-width: 900px) {
-    body.home.vgrid::after {
+    .washes.vgrid::after {
       display: none;
     }
   }
@@ -287,6 +275,17 @@
   }
   .skip:focus {
     left: 0;
+  }
+
+  /* Read but not drawn. clip-path, never display:none or visibility:hidden,
+     which take the text out of the accessibility tree; overflow keeps the box
+     at 1px so it adds no scrollable overflow, clip-path hides the last sliver. */
+  .vh {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
   }
 }
 
@@ -1361,7 +1360,7 @@
     padding-right: 14px;
     border-right: var(--hair) solid var(--line);
     text-align: right;
-    color: var(--ink-dim);
+    color: var(--ink-faint);
     align-self: stretch;
   }
   .cl {
@@ -1413,6 +1412,11 @@
     background: var(--surface-mark);
     border: var(--hair) solid color-mix(in srgb, var(--accent) 50%, transparent);
     border-radius: var(--r-xs);
+  }
+  /* --ink-faint reads 3.78:1 on this fill, under the 4.5:1 floor. --ink-meta
+     is 5.56:1 and still quieter than the key and the value either side. */
+  .mk .cc {
+    color: var(--ink-meta);
   }
 
   /* --- 04 unattended ------------------------------------------------------ */
@@ -1787,7 +1791,7 @@
     gap: 10px 32px;
     margin-top: 28px;
     padding-top: 20px;
-    border-top: 1px solid var(--line);
+    border-top: var(--hair) solid var(--line);
     font-size: 13.5px;
   }
   .prose-dates dt {
@@ -1804,7 +1808,6 @@
 
   .prose-toc {
     margin-top: clamp(36px, 5vw, 52px);
-    max-width: 68ch;
     align-self: start;
     position: sticky;
     /* Lines up with the root's own scroll-padding-top (main.css:127), so a
@@ -1832,7 +1835,7 @@
   .prose-toc a {
     font-size: 14.5px;
     color: var(--ink-2);
-    border-bottom: 1px solid transparent;
+    border-bottom: var(--hair) solid transparent;
   }
   .prose-toc a:hover {
     color: var(--accent);
@@ -1917,7 +1920,7 @@
   }
   .prose a {
     color: var(--ink);
-    border-bottom: 1px solid var(--line-hi);
+    border-bottom: var(--hair) solid var(--line-hi);
     transition:
       color 0.15s ease,
       border-color 0.15s ease;
@@ -2004,14 +2007,19 @@
   .prose code {
     font-size: 13px;
     background: var(--surface);
-    border: 1px solid var(--line);
+    border: var(--hair) solid var(--line);
     border-radius: 5px;
     padding: 1px 6px;
     color: var(--ink);
   }
+  .prose blockquote {
+    padding-left: 18px;
+    border-left: var(--hair) solid var(--line);
+    color: var(--ink-2);
+  }
   .prose hr {
     border: 0;
-    border-top: 1px solid var(--line);
+    border-top: var(--hair) solid var(--line);
     margin-block: clamp(36px, 4vw, 48px);
   }
 
@@ -2019,13 +2027,13 @@
      a region that scrolls by mouse but not by keyboard fails WCAG 2.1.1. */
   .prose .table-wrap {
     overflow-x: auto;
-    border: 1px solid var(--line);
+    border: var(--hair) solid var(--line);
     border-radius: var(--r);
     background: var(--bg-elev);
   }
   .prose .table-wrap:focus-visible {
     outline: 2px solid var(--accent);
-    outline-offset: 2px;
+    outline-offset: 3px;
   }
   .prose table {
     width: 100%;
@@ -2045,7 +2053,7 @@
     padding: 11px 16px;
     text-align: left;
     vertical-align: top;
-    border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+    border-bottom: var(--hair) solid color-mix(in srgb, var(--line) 70%, transparent);
   }
   .prose th {
     color: var(--ink);
@@ -2065,7 +2073,7 @@
 
   /* --info, not --warn: these callouts clarify, they do not warn. */
   .prose .callout {
-    border: 1px solid color-mix(in srgb, var(--info) 30%, transparent);
+    border: var(--hair) solid color-mix(in srgb, var(--info) 30%, transparent);
     border-left-width: 3px;
     border-radius: var(--r);
     background: color-mix(in srgb, var(--info) 6%, transparent);
@@ -2103,5 +2111,79 @@
       transform: none;
       transition: none;
     }
+  }
+}
+
+/* Unlayered on purpose: an unlayered rule beats every @layer above, so this
+   block does not have to out-specify the screen rules it overrides. */
+@media print {
+  /* Paper is white whatever data-theme says, so the palette is remapped once
+     rather than per rule. Every screen rule reads tokens, so they all follow;
+     a hardcoded dark value anywhere would survive this and print black. */
+  :root {
+    --bg: #fff;
+    --ink: #1a1a1a;
+    --ink-hi: #000;
+    --ink-2: #333333;
+    --ink-3: #444444;
+    --ink-meta: #555555;
+    --ink-faint: #555555;
+    --accent: #00507a;
+    --line: #bbbbbb;
+    --line-hi: #888888;
+    --rule: #cccccc;
+    --surface: #f2f2f2;
+    --surface-2: #f2f2f2;
+    --surface-code: #f2f2f2;
+  }
+
+  .skip,
+  .site-header,
+  .site-footer,
+  .washes,
+  .prose-toc,
+  .hlink {
+    display: none;
+  }
+
+  /* :has(.prose-toc) still matches once the rail is display:none, so without
+     this the sheet keeps an empty 236px column down its left edge. */
+  .prose-page .wrap:has(.prose-toc) {
+    display: block;
+  }
+
+  /* The site header was the only thing naming the source, and it is gone. */
+  .prose-head::before {
+    content: "sortie-ai.com";
+    display: block;
+    margin-bottom: 22px;
+    font-family: var(--mono);
+    font-size: 9pt;
+    color: var(--ink-2);
+  }
+
+  /* A reference the reader cannot click has to carry its own target. */
+  .prose a[href^="http"]::after {
+    content: " <" attr(href) ">";
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+
+  /* A heading stranded at the foot of a sheet, or a row split across two,
+     each cost the reader the thing the break landed in. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+  }
+  tr {
+    break-inside: avoid;
+  }
+
+  /* On screen the table scrolls inside its card; on paper the clip would
+     simply lose the far columns. */
+  .prose .table-wrap {
+    overflow: visible;
   }
 }
