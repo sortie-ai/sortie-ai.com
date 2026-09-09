@@ -18,4 +18,10 @@
     {{ partial "copy-button.html" (dict "command" $t.command "label" $t.copyLabel "event" $t.id) }}
   </div>
   {{- end }}
+
+  <p class="install-alt">
+    Also as a <a class="ilink" href="{{ site.Params.docs }}/guides/use-sortie-in-docker/">container image</a>,
+    and as <a class="ilink" href="{{ site.Params.github }}/releases">release binaries</a>
+    for macOS, Linux and Windows on amd64 and arm64.
+  </p>
 </div>

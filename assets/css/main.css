@@ -762,6 +762,20 @@
     color: var(--ok);
     border-color: var(--line-ok);
   }
+  /* --ink-2, not --ink-3: the closing band's green corner wash lifts the plate
+     under this line, and --ink-3 measures 4.40:1 there, under the 4.5:1 floor. */
+  .install-alt {
+    margin-top: 12px;
+    font-size: 13.5px;
+    color: var(--ink-2);
+  }
+  .ilink {
+    color: var(--ink);
+    border-bottom: var(--hair) solid var(--line-hi);
+    transition:
+      color 0.15s ease,
+      border-color 0.15s ease;
+  }
   @media (hover: hover) {
     .copy:hover {
       border-color: var(--line-hover);
@@ -769,6 +783,10 @@
     }
     .tab:not([aria-selected="true"]):hover {
       color: var(--ink);
+    }
+    .ilink:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
     }
   }
 
