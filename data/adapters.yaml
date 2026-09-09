@@ -46,7 +46,6 @@ groups:
       - name: "Kiro"
         icon: "kiro"
         href: "/reference/adapter-kiro/"
-        note: "runs headless: no token budgets or agent tools."
 
   - id: review
     title: "Pull requests and CI"

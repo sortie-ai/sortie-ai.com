@@ -57,6 +57,11 @@ keepQuotes = true
 keepDocumentTags = true
 
 [params]
+# The six vertical hairlines behind the landing page, on a 236px step. The
+# mockup draws them; the site ships without them. True emits body.vgrid, the
+# only selector the grid rules in assets/css/main.css answer to.
+verticalGrid = false
+
 # --- Single source of truth for the release number -------------------------
 # Feeds the nav chip, the footer, JSON-LD softwareVersion and llms.txt.
 # NEVER write a leading `v`. Releases carry v-prefixed git tags from 1.19.0 on,
@@ -148,18 +153,14 @@ name = "License"
 url = "https://github.com/sortie-ai/sortie/blob/main/LICENSE"
 weight = 50
 
-# The footer's fourth column. Privacy and Cookies are not here: they live in
-# the legal bar below, and a column that repeated them was the duplication
-# this menu replaces.
-[[menus.resources]]
-name = "Changelog"
-url = "https://docs.sortie-ai.com/changelog/"
+# The footer's fourth column, and the only place these two pages are linked.
+# Both URLs are named in the CI existence check and in the documentation
+# site's consent banner, so neither can move.
+[[menus.legal]]
+name = "Privacy Policy"
+url = "/privacy/"
 weight = 10
-[[menus.resources]]
-name = "Contributing"
-url = "https://github.com/sortie-ai/sortie/blob/main/CONTRIBUTING.md"
+[[menus.legal]]
+name = "Cookies"
+url = "/cookies/"
 weight = 20
-[[menus.resources]]
-name = "Architecture"
-url = "https://github.com/sortie-ai/sortie/blob/main/docs/architecture.md"
-weight = 30

@@ -130,13 +130,13 @@
 
       <div class="stack">
         {{ partial "chip-row.html" (dict "group" (index $groups 0) "ctx" .) }}
-        <div class="rowdiv rd-a-down" aria-hidden="true"></div>
+        <div class="rowdiv rd-a-down" aria-hidden="true"><i></i></div>
         <div class="hub-row">
           <span class="hub"><span class="brand hub-brand">{{ partial "logo.html" . }}Sortie</span></span>
         </div>
-        <div class="rowdiv rd-up rd-a-up" aria-hidden="true"></div>
+        <div class="rowdiv rd-up rd-a-up" aria-hidden="true"><i></i></div>
         {{ partial "chip-row.html" (dict "group" (index $groups 1) "ctx" .) }}
-        <div class="rowdiv rd-tall rd-ok" aria-hidden="true"></div>
+        <div class="rowdiv rd-tall rd-ok" aria-hidden="true"><i></i></div>
         {{ partial "chip-row.html" (dict "group" (index $groups 2) "ctx" .) }}
       </div>
     </div>

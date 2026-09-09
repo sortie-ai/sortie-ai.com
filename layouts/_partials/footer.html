@@ -34,10 +34,10 @@
           </ul>
         </nav>
 
-        <nav aria-labelledby="foot-resources">
-          <h2 id="foot-resources">Resources</h2>
+        <nav aria-labelledby="foot-legal">
+          <h2 id="foot-legal">Legal</h2>
           <ul>
-            {{- range site.Menus.resources }}
+            {{- range site.Menus.legal }}
             <li><a href="{{ .URL }}">{{ .Name }}</a></li>
             {{- end }}
           </ul>
@@ -47,10 +47,6 @@
 
     <div class="legal">
       <p>&copy; {{ now.Year }} Sortie AI, LLC</p>
-      <div class="legal-links">
-        <a class="tlink" href="/privacy/">Privacy</a>
-        <a class="tlink" href="/cookies/">Cookies</a>
-      </div>
     </div>
   </div>
 </footer>

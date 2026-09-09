@@ -6,7 +6,7 @@
 </head>
 {{/* The grid and washes are landing-page devices tied to the 1180 column.
      Scoping them here keeps 404 and the legal pages bare, per the spec. */}}
-<body{{ if .IsHome }} class="home"{{ end }}>
+<body{{ if .IsHome }} class="home{{ if site.Params.verticalGrid }} vgrid{{ end }}"{{ end }}>
 <a class="skip" href="#main">Skip to content</a>
 
 {{ partial "header.html" . }}
