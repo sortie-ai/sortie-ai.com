@@ -18,15 +18,3 @@
 
 # Wrangler
 /.wrangler
-
-# Research notes
-/.research
-
-# NOT committed. Cloudflare Workers Builds parses any root .tool-versions and
-# dies at the Installing stage on asdf plugin names its image does not know,
-# before Hugo runs. Pin Hugo there with the HUGO_VERSION build variable.
-# Keep in step with .github/workflows/ci.yml and the Cloudflare dashboard.
-.tool-versions
-
-# Internal Knowledge Base
-/kb
