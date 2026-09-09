@@ -1,52 +1,52 @@
 <footer class="site-footer">
   <div class="wrap">
     <div class="foot">
-      <div class="about">
-        <a class="brand" href="/">
-          {{ partial "logo.html" . }}
-          Sortie
-        </a>
-        <p>
-          A sortie is a single mission executed autonomously. The orchestrator dispatches agents on
-          missions, each with an isolated workspace, a defined objective and an expected return.
-        </p>
+      <a class="brand foot-brand" href="/">
+        {{ partial "logo.html" . }}
+        Sortie
+      </a>
+
+      <div class="foot-cols">
+        <nav aria-labelledby="foot-product">
+          <h2 id="foot-product">Product</h2>
+          <ul>
+            {{- range site.Menus.product }}
+            <li><a href="{{ .URL }}">{{ .Name }}</a></li>
+            {{- end }}
+          </ul>
+        </nav>
+
+        <nav aria-labelledby="foot-docs">
+          <h2 id="foot-docs">Documentation</h2>
+          <ul>
+            {{- range site.Menus.documentation }}
+            <li><a href="{{ .URL }}">{{ .Name }}</a></li>
+            {{- end }}
+          </ul>
+        </nav>
+
+        <nav aria-labelledby="foot-project">
+          <h2 id="foot-project">Project</h2>
+          <ul>
+            {{- range site.Menus.project }}
+            <li><a href="{{ .URL }}">{{ .Name }}</a></li>
+            {{- end }}
+          </ul>
+        </nav>
+
+        <nav aria-labelledby="foot-legal">
+          <h2 id="foot-legal">Legal</h2>
+          <ul>
+            {{- range site.Menus.legal }}
+            <li><a href="{{ .URL }}">{{ .Name }}</a></li>
+            {{- end }}
+          </ul>
+        </nav>
       </div>
-
-      <nav aria-labelledby="foot-product">
-        <h2 id="foot-product">Product</h2>
-        <ul>
-          {{- range site.Menus.product }}
-          <li><a href="{{ .URL }}">{{ .Name }}</a></li>
-          {{- end }}
-        </ul>
-      </nav>
-
-      <nav aria-labelledby="foot-docs">
-        <h2 id="foot-docs">Documentation</h2>
-        <ul>
-          {{- range site.Menus.documentation }}
-          <li><a href="{{ .URL }}">{{ .Name }}</a></li>
-          {{- end }}
-        </ul>
-      </nav>
-
-      <nav aria-labelledby="foot-project">
-        <h2 id="foot-project">Project</h2>
-        <ul>
-          {{- range site.Menus.project }}
-          <li><a href="{{ .URL }}">{{ .Name }}</a></li>
-          {{- end }}
-        </ul>
-      </nav>
     </div>
 
     <div class="legal">
-      <p>&copy; {{ now.Year }} Sortie AI, LLC. All rights reserved.</p>
-      <div class="legal-links">
-        <a class="ilink" href="/privacy/">Privacy</a>
-        <span class="sep" aria-hidden="true">·</span>
-        <a class="ilink" href="/cookies/">Cookies</a>
-      </div>
+      <p>&copy; {{ now.Year }} Sortie AI, LLC</p>
     </div>
   </div>
 </footer>

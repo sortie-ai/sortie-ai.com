@@ -1,57 +1,61 @@
-# Integration grid. `href` is relative to site.Params.docs.
+# Integration grid. `href` is relative to site.Params.docs, and blank renders
+# an inert chip. `icon` is the basename of a file in assets/img/adapters/;
+# `note` renders as the row's trailing sentence, prefixed with the item name.
 
 groups:
   - id: trackers
-    title: "Issue trackers"
+    title: "Issue Trackers"
     items:
       - name: "Jira"
-        note: "Cloud and Server / Data Center"
+        icon: "jira"
         href: "/reference/adapter-jira/"
-      - name: "GitHub Issues"
+      - name: "GitHub"
+        icon: "github"
         href: "/reference/adapter-github/"
-      - name: "GitLab Issues"
+      - name: "GitLab"
+        icon: "gitlab"
         href: "/reference/adapter-gitlab/"
       - name: "Linear"
+        icon: "linear"
         href: "/reference/adapter-linear/"
       - name: "Gitea"
-        note: "covers Forgejo and Codeberg"
+        icon: "gitea"
         href: "/reference/adapter-gitea/"
 
   - id: agents
-    title: "Coding agents"
+    title: "Agents"
     items:
       - name: "Claude Code"
+        icon: "claude-code"
         href: "/reference/adapter-claude-code/"
       - name: "Codex"
+        icon: "codex"
         href: "/reference/adapter-codex/"
-      - name: "GitHub Copilot"
+      - name: "Copilot CLI"
+        icon: "copilot-cli"
         href: "/reference/adapter-copilot/"
       - name: "OpenCode"
+        icon: "opencode"
         href: "/reference/adapter-opencode/"
+      # No href while /reference/adapter-gemini/ returns 404. The chip, the
+      # og:description adapter list and this file name the same set and move
+      # together on the day the adapter lands.
+      - name: "Gemini"
+        icon: "gemini"
       - name: "Kiro"
-        note: "headless"
+        icon: "kiro"
         href: "/reference/adapter-kiro/"
 
   - id: review
-    title: "Code review and CI"
+    title: "Pull requests and CI"
     items:
       - name: "GitHub"
-        note: "pull requests, checks"
+        icon: "github"
         href: "/guides/connect-to-github/"
+      - name: "GitLab"
+        icon: "gitlab"
+        href: "/guides/connect-to-gitlab/"
       - name: "Gitea"
-        note: "pull requests, status"
+        icon: "gitea"
         href: "/guides/connect-to-gitea/"
-      - name: "Auto-merge and merge-conflict reactions"
-        href: "/reference/reactions/"
-      - name: "Self-review before the PR opens"
-        href: "/guides/configure-self-review/"
-
-  - id: notifications
-    title: "Notifications"
-    items:
-      - name: "Slack"
-        href: "/reference/workflow-config/"
-      - name: "Generic webhook"
-        href: "/reference/workflow-config/"
-      - name: "Agent-initiated, mid-session"
-        href: "/guides/use-agent-tools-in-prompts/"
+        note: "covers Forgejo and Codeberg."

@@ -1,7 +1,11 @@
 {
   "$schema": "https://html-validate.org/schemas/config.json",
   "root": true,
-  "extends": ["html-validate:recommended"],
+  "extends": [
+    "html-validate:recommended",
+    "html-validate:a11y",
+    "html-validate:document"
+  ],
   "rules": {
     "doctype-style": "off",
     "attribute-boolean-style": "off",

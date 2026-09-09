@@ -25,12 +25,8 @@ home = ["html", "llmstxt"]
 page = ["html"]
 
 # /llms.txt per https://llmstxt.org, rendered by layouts/home.llmstxt.txt.
-# Since Hugo 0.146 removed the home page's `index` template, the documented
-# spelling for a custom output format is `home.<format>.<ext>`. CORRECTION to
-# an earlier note here: `index.llmstxt.txt` does NOT fail on 0.164.0 — measured
-# 2026-08-11, it resolves and writes a byte-identical /llms.txt with no WARN.
-# mediaType is text/plain so the file lands at /llms.txt; static/_headers then
-# serves it as text/markdown, which is what the spec asks for.
+# mediaType is text/plain, which lands the file at /llms.txt; static/_headers
+# then serves it as text/markdown, matching the llms.txt spec.
 [outputFormats.llmstxt]
 mediaType = "text/plain"
 baseName = "llms"
@@ -44,7 +40,10 @@ changefreq = ""
 priority = -1
 
 [frontmatter]
-lastmod = [":git", "lastmod", ":default"]
+# `lastmod` ahead of `:git` so a page can carry an explicit date: the home
+# page's copy lives in layouts/home.html, which `:git` never reads. A page with
+# no `lastmod` key still resolves through `:git` and stays maintenance-free.
+lastmod = ["lastmod", ":git", ":default"]
 
 [markup.goldmark.renderer]
 # For inline HTML in the legal pages' Markdown.
@@ -57,50 +56,48 @@ keepQuotes = true
 keepDocumentTags = true
 
 [params]
-# --- Single source of truth for the release number -------------------------
-# Feeds the nav chip, the footer, JSON-LD softwareVersion and llms.txt.
-# NEVER write a leading `v`. Releases carry v-prefixed git tags from 1.19.0 on,
-# but the number stays bare. schema.org types softwareVersion as free-form
-# Text, so a `v` there is invisible on the page and no validator flags it.
+# The six vertical hairlines behind the landing page, on a 236px step. The
+# mockup draws them; the site ships without them. True emits body.vgrid, the
+# only selector the grid rules in assets/css/main.css answer to.
+verticalGrid = false
+
+# Feeds the nav chip, footer, JSON-LD softwareVersion and llms.txt. NEVER add a
+# leading `v`: git tags gained one from 1.19.0 on, but the number itself stays
+# bare, and schema.org's free-form Text type means no validator flags a stray `v`.
 version = "1.20.0"
 
 description = "Open-source coding agent orchestrator. Sortie polls Jira, GitHub, GitLab, Linear or Gitea, gives every ticket an isolated workspace, launches the coding agent you already use, and follows the work through CI, review and merge. It installs as one file. Apache-2.0, no telemetry."
 
-# --- External hosts --------------------------------------------------------
 docs = "https://docs.sortie-ai.com"
 github = "https://github.com/sortie-ai/sortie"
 org = "https://github.com/sortie-ai"
 
-# --- Social card -----------------------------------------------------------
-# Byte-identical to the docs site's copy: one social identity across both.
+# ogImage is shared with the docs site; update one copy without the other and the cards diverge.
 ogImage = "img/og-image.jpg"
-ogImageAlt = "Sortie — the Sortie wordmark and chevron logomark in cyan on a deep navy field."
+ogImageAlt = "Sortie - Turn tracker tickets into agent sessions"
 
 [params.author]
 name = "Sortie AI"
 
-# --- Navigation ------------------------------------------------------------
-
+# Four entries, and every url is an in-page fragment. Docs and GitHub are not
+# here: header.html renders them in the right-hand group, and the mobile menu
+# only reveals this group.
 [[menus.main]]
-name = "How it works"
+name = "What it owns"
 url = "/#how"
 weight = 10
+[[menus.main]]
+name = "Your stack"
+url = "/#adapters"
+weight = 20
 [[menus.main]]
 name = "Configuration"
 url = "/#workflow"
-weight = 20
-[[menus.main]]
-name = "Adapters"
-url = "/#adapters"
 weight = 30
 [[menus.main]]
-name = "Operating it"
+name = "Unattended"
 url = "/#operate"
 weight = 40
-[[menus.main]]
-name = "Docs"
-url = "https://docs.sortie-ai.com"
-weight = 50
 
 [[menus.product]]
 name = "How it works"
@@ -111,13 +108,9 @@ name = "Adapters"
 url = "/#adapters"
 weight = 20
 [[menus.product]]
-name = "Operating it"
-url = "/#operate"
+name = "Configuration"
+url = "/#workflow"
 weight = 30
-[[menus.product]]
-name = "Scope"
-url = "/#scope"
-weight = 40
 
 [[menus.documentation]]
 name = "Installation"
@@ -132,17 +125,9 @@ name = "Guides"
 url = "https://docs.sortie-ai.com/guides/"
 weight = 30
 [[menus.documentation]]
-name = "Concepts"
-url = "https://docs.sortie-ai.com/concepts/"
-weight = 40
-[[menus.documentation]]
 name = "Reference"
 url = "https://docs.sortie-ai.com/reference/"
-weight = 50
-[[menus.documentation]]
-name = "Changelog"
-url = "https://docs.sortie-ai.com/changelog/"
-weight = 60
+weight = 40
 
 [[menus.project]]
 name = "Source"
@@ -153,10 +138,6 @@ name = "Releases"
 url = "https://github.com/sortie-ai/sortie/releases"
 weight = 20
 [[menus.project]]
-name = "Contributing"
-url = "https://github.com/sortie-ai/sortie/blob/main/CONTRIBUTING.md"
-weight = 30
-[[menus.project]]
 name = "Discussions"
 url = "https://github.com/sortie-ai/sortie/discussions"
 weight = 40
@@ -164,3 +145,15 @@ weight = 40
 name = "License"
 url = "https://github.com/sortie-ai/sortie/blob/main/LICENSE"
 weight = 50
+
+# The footer's fourth column, and the only place these two pages are linked.
+# Both URLs are named in the CI existence check and in the documentation
+# site's consent banner, so neither can move.
+[[menus.legal]]
+name = "Privacy Policy"
+url = "/privacy/"
+weight = 10
+[[menus.legal]]
+name = "Cookies"
+url = "/cookies/"
+weight = 20

@@ -12,9 +12,6 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-# Pinned here and not in .tool-versions, which cannot be committed: Cloudflare
-# Workers Builds parses it and dies at the Installing stage. Keep in step with
-# the local .tool-versions and the dashboard's HUGO_VERSION.
 env:
   HUGO_VERSION: "0.164.0"
   NODE_VERSION: "24.19.0"
@@ -33,11 +30,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
       - uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: ${{ env.HUGO_VERSION }}
           extended: true
+
+      # --ignore-scripts skips the esbuild/workerd/fsevents postinstalls,
+      # which nothing in this job needs.
+      - name: Install pinned lint tooling
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      # Hugo resolves .Date from lastmod too, so a future value drops the home
+      # page from the build and the sitemap with no WARN. Before Build and
+      # unconditional: downstream this surfaces as "missing public/index.html".
+      - name: Home-page lastmod is not a future date
+        run: python3 scripts/check-home-lastmod.py --no-future
 
       - name: Build
         run: hugo --gc --minify --logLevel info --printPathWarnings
@@ -53,16 +62,20 @@ jobs:
             exit 1
           fi
 
-      # A leading "v" would reach softwareVersion, which schema.org types as
-      # free-form Text, so no validator flags it and it is invisible on the page.
+      # Enforced here because nothing else catches a stray leading "v";
+      # see hugo.toml for why it must stay bare.
       - name: params.version stays a bare X.Y.Z
         run: |
           grep -qE '^version = "[0-9]+\.[0-9]+\.[0-9]+"$' hugo.toml \
             || { echo "::error::params.version must be a bare X.Y.Z"; exit 1; }
 
-      # The policy pages are listed because the docs site's consent banner links
-      # straight at them. A page that stops building takes that link down and
-      # leaves the sitemap, with nothing else in this gate noticing.
+      # Sources, not public/: a stale stylesheet can be served out of
+      # resources/_gen/, so built CSS is not evidence of a source edit.
+      - name: No raw colour literal in any stylesheet
+        run: python3 scripts/no-raw-colour.py assets/css/*.css
+
+      # Policy pages are listed by name: the docs site's consent banner links
+      # straight at them, and nothing else in this gate would notice one gone.
       - name: Check required output exists
         run: |
           for f in public/index.html public/404.html public/robots.txt \
@@ -86,12 +99,48 @@ jobs:
           print('JSON-LD OK:', [n['@type'] for n in data['@graph']])
           PY
 
-      - name: Validate HTML
-        # Without .htmlvalidate.json, html-validate checks no rules and exits 0.
-        # These are globs, and it exits 0 while any one of them matches, so a
-        # missing page is skipped here. Existence is the step above's job.
+
+      - name: Every fragment link resolves to an id, on every built page
+        run: python3 scripts/check-anchors.py public
+
+      - name: Heading ids and levels match the committed baseline
+        run: python3 scripts/check-heading-ids.py --check
+
+      # Compares changed <main> text against the PR base, not changed paths, so
+      # a CSS-only edit is exempt. pull_request only: a push has no base ref
+      # to diff against.
+      - name: Home-page lastmod moves when the home page's text does
+        if: github.event_name == 'pull_request'
         run: |
+          python3 scripts/check-home-lastmod.py \
+            "${{ github.event.pull_request.base.sha }}"
+
+      - name: Validate HTML
+        # One invocation per file, list taken from the build: given several paths
+        # html-validate exits 0 while any one matches, and a hardcoded list
+        # leaves a new page unvalidated. Absence is the existence step's job.
+        run: |
+          hv=node_modules/.bin/html-validate
+          test -x "$hv" \
+            || { echo "::error::$hv missing — npm ci did not run"; exit 1; }
           test -f .htmlvalidate.json \
             || { echo "::error::.htmlvalidate.json missing — html-validate would silently pass"; exit 1; }
-          npx --yes html-validate public/index.html public/404.html \
-            public/privacy/index.html public/cookies/index.html
+
+          # `extends` lists :a11y even though :recommended covers the same rules
+          # today, so a future preset split can't silently drop them. Kept here,
+          # not in .htmlvalidate.json, because that file is parsed as strict JSON.
+          # html-validate resolves config from the target file's directory,
+          # not the cwd. Assert a rule only this repo's `extends` pulls in,
+          # or a silent fallback to defaults checks the wrong rule set.
+          "$hv" --print-config public/index.html | grep -q '"heading-level"' \
+            || { echo "::error::.htmlvalidate.json is not in force for public/"; exit 1; }
+          pages="$(mktemp)"
+          find public -name '*.html' | sort > "$pages"
+          test -s "$pages" \
+            || { echo "::error::no built HTML found — the check cannot fail"; exit 1; }
+          fail=0
+          while IFS= read -r page; do
+            "$hv" "$page" || fail=1
+          done < "$pages"
+          rm -f "$pages"
+          exit $fail

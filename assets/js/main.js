@@ -45,34 +45,38 @@
     });
   }
 
-  var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+  /* Grouped per tablist. The page carries two install widgets, and a flat
+     querySelectorAll would let a click in one hide the other's panel. */
+  document.querySelectorAll('[role="tablist"]').forEach(function (list) {
+    var tabs = Array.prototype.slice.call(list.querySelectorAll(".tab"));
 
-  function select(tab) {
-    tabs.forEach(function (t) {
-      var on = t === tab;
-      t.setAttribute("aria-selected", on ? "true" : "false");
-      /* Roving tabindex: exactly one tab is reachable with Tab. */
-      t.setAttribute("tabindex", on ? "0" : "-1");
-      var panel = document.getElementById(t.getAttribute("aria-controls"));
-      if (panel) panel.hidden = !on;
-    });
-  }
+    function select(tab) {
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        /* Roving tabindex: exactly one tab is reachable with Tab. */
+        t.setAttribute("tabindex", on ? "0" : "-1");
+        var panel = document.getElementById(t.getAttribute("aria-controls"));
+        if (panel) panel.hidden = !on;
+      });
+    }
 
-  tabs.forEach(function (t, i) {
-    t.addEventListener("click", function () {
-      select(t);
-    });
-    t.addEventListener("keydown", function (e) {
-      var next = null;
-      if (e.key === "ArrowRight") next = tabs[(i + 1) % tabs.length];
-      else if (e.key === "ArrowLeft")
-        next = tabs[(i - 1 + tabs.length) % tabs.length];
-      else if (e.key === "Home") next = tabs[0];
-      else if (e.key === "End") next = tabs[tabs.length - 1];
-      if (!next) return;
-      e.preventDefault();
-      select(next);
-      next.focus();
+    tabs.forEach(function (t, i) {
+      t.addEventListener("click", function () {
+        select(t);
+      });
+      t.addEventListener("keydown", function (e) {
+        var next = null;
+        if (e.key === "ArrowRight") next = tabs[(i + 1) % tabs.length];
+        else if (e.key === "ArrowLeft")
+          next = tabs[(i - 1 + tabs.length) % tabs.length];
+        else if (e.key === "Home") next = tabs[0];
+        else if (e.key === "End") next = tabs[tabs.length - 1];
+        if (!next) return;
+        e.preventDefault();
+        select(next);
+        next.focus();
+      });
     });
   });
 
@@ -158,5 +162,79 @@
     targets.forEach(function (el) {
       io.observe(el);
     });
+  }
+
+  /* Geometry on demand, not a second IntersectionObserver: IO reports a box
+     entering or leaving a band, which lags the top-edge crossing this needs by
+     the heading box's own height, measured 55.59px at 1440. */
+  var rail = document.querySelector(".prose-toc");
+  var marks = [];
+
+  if (rail) {
+    rail.querySelectorAll('a[href^="#"]').forEach(function (a) {
+      var target = document.getElementById(a.getAttribute("href").slice(1));
+      if (target) marks.push({ link: a, target: target });
+    });
+  }
+
+  if (marks.length) {
+    /* 1px below the line the root already scrolls anchors to
+       (scroll-padding-top, main.css:127), so a heading reached from the rail
+       marks its own entry rather than the one above it. */
+    var LINE = 65;
+    var currentLink = null;
+
+    var pick = function () {
+      /* The foot of the document wins outright. A final section shorter than
+         a viewport never brings its own heading up to LINE, and the last
+         entry would then be the one entry that can never mark. */
+      if (
+        window.scrollY + window.innerHeight >=
+        document.documentElement.scrollHeight - 2
+      ) {
+        return marks.length - 1;
+      }
+      /* 0 when no heading has reached the line: the reader is in the page
+         head, and the rail is the only thing answering "where am I". Document
+         order means the first heading below the line ends the search. */
+      var found = 0;
+      for (var i = 0; i < marks.length; i++) {
+        if (marks[i].target.getBoundingClientRect().top > LINE) break;
+        found = i;
+      }
+      return found;
+    };
+
+    var apply = function () {
+      var next = marks[pick()].link;
+      if (next === currentLink) return;
+      if (currentLink) currentLink.removeAttribute("aria-current");
+      next.setAttribute("aria-current", "location");
+      currentLink = next;
+
+      /* Only once the rail itself scrolls, under a ~536px viewport height.
+         scrollIntoView is not usable here: it also scrolls the window, which
+         would drag the page out from under the reader who caused this. */
+      if (rail.scrollHeight > rail.clientHeight) {
+        var r = next.getBoundingClientRect();
+        var box = rail.getBoundingClientRect();
+        if (r.top < box.top) rail.scrollTop += r.top - box.top;
+        else if (r.bottom > box.bottom) rail.scrollTop += r.bottom - box.bottom;
+      }
+    };
+
+    var queued = false;
+    var onMove = function () {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () {
+        queued = false;
+        apply();
+      });
+    };
+
+    apply();
+    window.addEventListener("scroll", onMove, { passive: true });
+    window.addEventListener("resize", onMove, { passive: true });
   }
 })();

@@ -1,0 +1,7 @@
+{{- /* The <h{{ .Level }} id="{{ .Anchor }}"> form is Hugo's own default output.
+       Heading ids are derived from heading text and are a public contract for
+       every bookmark and inbound fragment link, so this line may not drift. */ -}}
+<h{{ .Level }} id="{{ .Anchor }}"{{ with .Attributes.class }} class="{{ . }}"{{ end }}>{{- .Text -}}
+{{- /* No whitespace around the anchor: the gap is CSS, so the minifier has
+       nothing to collapse and the glyph cannot wrap away from the heading. */ -}}
+<a class="hlink" href="#{{ .Anchor }}" aria-label="Permalink to {{ .PlainText }}"><span aria-hidden="true">#</span></a></h{{ .Level }}>

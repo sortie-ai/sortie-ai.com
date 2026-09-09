@@ -1,5 +1,5 @@
 <header class="site-header" id="site-header">
-  <div class="wrap nav">
+  <div class="nav">
     <a class="brand" href="/" aria-label="Sortie home">
       {{ partial "logo.html" . }}
       Sortie
@@ -10,9 +10,12 @@
       {{- end }}
     </nav>
     <div class="nav-right">
-      <span class="ver">{{ site.Params.version }}</span>
-      <a class="btn btn-ghost btn-sm" href="{{ site.Params.github }}">GitHub</a>
-      <a class="btn btn-primary btn-sm" href="{{ site.Params.docs }}/getting-started/quick-start/">Quick start</a>
+      {{/* The `v` is markup only. The bare param also reaches JSON-LD
+           softwareVersion in schema.html and "Current release" in
+           home.llmstxt.txt, and ci.yml asserts the bare X.Y.Z form. */}}
+      <span class="ver">v{{ site.Params.version }}</span>
+      <a class="tlink" href="{{ site.Params.github }}">GitHub</a>
+      <a class="tlink" href="{{ site.Params.docs }}">Docs</a>
       <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="primary-nav">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>

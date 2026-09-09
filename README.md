@@ -22,19 +22,21 @@ For a full overview, see the [product documentation](https://docs.sortie-ai.com)
 |---|---|
 | **Static site generator** | [Hugo](https://gohugo.io/) ≥ 0.164.0 (extended) |
 | **Styling** | Hand-written CSS on design tokens, cascade layers, no framework |
-| **Typography** | Inter Variable, self-hosted, latin subset, weight axis only |
+| **Typography** | Inter Variable for body and Stack Sans Headline for display, both self-hosted, latin subset, weight axis only. Stack Sans Headline is licensed SIL OFL-1.1 and its license text sits beside the file in `assets/fonts/`. |
 | **JavaScript** | ~150 lines, no dependencies, bundled by Hugo's `js.Build` |
 | **Deployment** | [Cloudflare Workers](https://developers.cloudflare.com/workers/) (static assets via Wrangler) |
 
 Every shipped asset is fingerprinted and carries a Subresource Integrity digest.
-There is no Node dependency in the build itself; npm is only used for Wrangler.
+There is no Node dependency in the build itself. npm provides Wrangler and
+`html-validate`, pinned in `devDependencies`; CI installs it with
+`npm ci --ignore-scripts`.
 
 ## Prerequisites
 
 - [Hugo](https://gohugo.io/installation/) ≥ 0.164.0 **extended** version
 - [Go](https://go.dev/dl/) ≥ 1.20 - required by Hugo Modules (theme dependency management)
 - [Git](https://git-scm.com/) - required for `enableGitInfo` (last-modified dates)
-- [Node.js](https://nodejs.org/) - required for Wrangler deployment
+- [Node.js](https://nodejs.org/) - required for Wrangler deployment and the HTML lint gate
 
 ## Local development
 
