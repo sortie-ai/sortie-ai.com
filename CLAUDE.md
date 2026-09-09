@@ -13,7 +13,6 @@ Read `package.json` scripts before invoking Hugo directly; `.github/workflows/ci
 - **Never link a pinned release tag; use `/releases/latest`.** `/releases/tag/1.19.0` is a hard 404 since tags gained a `v` prefix, and `/releases/tag/v1.18.0` returns HTTP 200 with no notes and no assets, so a status-code link checker cannot tell it from a real release.
 - **Allowing AI crawlers in `layouts/robots.txt` is deliberate.** The goal is to be cited by answer engines. Each vendor's tokens are split by purpose, so training can be withheld without losing search visibility.
 - **A comment marks code that is not obvious.** It answers "what breaks if I change this", never "what does this do", and three lines is the ceiling. `CORRECTION <sha>:` and `FORK <upstream-path>:` are the two labelled exemptions.
-- **The documentation site's remote is `docs`, not `sortie-docs`,** even though it is usually cloned into a `sortie-docs` directory.
 
 ## Boundaries
 
@@ -34,5 +33,9 @@ Read `package.json` scripts before invoking Hugo directly; `.github/workflows/ci
 
 ## Reference docs
 
-- `README.md` - stack, prerequisites, commands, layout, brand assets, and the traps that are enforced elsewhere in the tree: `.tool-versions`, `safeJS`, the injected font URL, minify-before-fingerprint and `immutable` caching. Do not restate any of it here.
-- [sortie-ai/sortie](https://github.com/sortie-ai/sortie) - the product. [sortie-ai/docs](https://github.com/sortie-ai/docs) - the documentation site. This repository is a sibling of both, not part of either.
+- `README.md` - stack, prerequisites, commands, layout, brand assets, and the traps that are enforced elsewhere in the tree. Do not restate any of it here.
+- [sortie-ai/sortie](https://github.com/sortie-ai/sortie) - the product.
+- [sortie-ai/docs](https://github.com/sortie-ai/docs) - the documentation site.
+
+
+This repository is a sibling of sortie-ai/sortie and sortie-ai/docs, not part of either.
