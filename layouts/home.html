@@ -172,11 +172,13 @@
 <span class="ln" aria-hidden="true">16</span><code class="cl"> </code><span class="an"></span>
 <span class="ln" aria-hidden="true">17</span><code class="cl"><span class="cf">---</span></code><span class="an"></span>
 <span class="ln" aria-hidden="true">18</span><code class="cl"> </code><span class="an"></span>
-<span class="ln" aria-hidden="true">19</span><code class="cl"><span class="mk">Implement <span class="ct">{{ "{{" }} .issue.title {{ "}}" }}</span></span></code><span class="an tall"><span class="tie" aria-hidden="true"></span>your prompt, unchanged</span>
-<span class="ln" aria-hidden="true">20</span><code class="cl">on a branch named <span class="ct">{{ "{{" }} .issue.identifier {{ "}}" }}</span>.</code><span class="an"></span>
-<span class="ln" aria-hidden="true">21</span><code class="cl"> </code><span class="an"></span>
-<span class="ln" aria-hidden="true">22</span><code class="cl">Run the test suite before you open</code><span class="an"></span>
-<span class="ln" aria-hidden="true">23</span><code class="cl">the pull request.</code><span class="an"></span></pre>
+<span class="ln" aria-hidden="true">19</span><code class="cl"><span class="mk">You are a senior software engineer.</span></code><span class="an tall"><span class="tie" aria-hidden="true"></span>your prompt</span>
+<span class="ln" aria-hidden="true">20</span><code class="cl"> </code><span class="an"></span>
+<span class="ln" aria-hidden="true">21</span><code class="cl">Your task: <span class="ct">{{ "{{" }} .issue.title {{ "}}" }}</span> (<span class="ct">{{ "{{" }} .issue.identifier {{ "}}" }}</span>)</code><span class="an"></span>
+<span class="ln" aria-hidden="true">22</span><code class="cl"> </code><span class="an"></span>
+<span class="ln" aria-hidden="true">23</span><code class="cl"># Context</code><span class="an"></span>
+<span class="ln" aria-hidden="true">24</span><code class="cl"> </code><span class="an"></span>
+<span class="ln" aria-hidden="true">25</span><code class="cl">{{ "{{" }} .issue.description {{ "}}" }}</code><span class="an"></span></pre>
         </div>
       </div>
     </div>
