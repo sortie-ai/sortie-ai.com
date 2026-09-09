@@ -27,14 +27,16 @@ For a full overview, see the [product documentation](https://docs.sortie-ai.com)
 | **Deployment** | [Cloudflare Workers](https://developers.cloudflare.com/workers/) (static assets via Wrangler) |
 
 Every shipped asset is fingerprinted and carries a Subresource Integrity digest.
-There is no Node dependency in the build itself; npm is only used for Wrangler.
+There is no Node dependency in the build itself. npm provides Wrangler and
+`html-validate`, pinned in `devDependencies`; CI installs it with
+`npm ci --ignore-scripts`.
 
 ## Prerequisites
 
 - [Hugo](https://gohugo.io/installation/) ≥ 0.164.0 **extended** version
 - [Go](https://go.dev/dl/) ≥ 1.20 - required by Hugo Modules (theme dependency management)
 - [Git](https://git-scm.com/) - required for `enableGitInfo` (last-modified dates)
-- [Node.js](https://nodejs.org/) - required for Wrangler deployment
+- [Node.js](https://nodejs.org/) - required for Wrangler deployment and the HTML lint gate
 
 ## Local development
 
