@@ -33,11 +33,24 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
       - uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: ${{ env.HUGO_VERSION }}
           extended: true
+
+      # html-validate is pinned in package.json, so a bump arrives as a
+      # Dependabot PR that has to pass this gate. --ignore-scripts skips the
+      # esbuild/workerd/fsevents postinstalls, which nothing in this job needs.
+      - name: Install pinned lint tooling
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      # Hugo resolves .Date from lastmod too, so a future value drops the home
+      # page from the build and the sitemap with no WARN. Before Build and
+      # unconditional: downstream this surfaces as "missing public/index.html".
+      - name: Home-page lastmod is not a future date
+        run: python3 scripts/check-home-lastmod.py --no-future
 
       - name: Build
         run: hugo --gc --minify --logLevel info --printPathWarnings
@@ -59,6 +72,12 @@ jobs:
         run: |
           grep -qE '^version = "[0-9]+\.[0-9]+\.[0-9]+"$' hugo.toml \
             || { echo "::error::params.version must be a bare X.Y.Z"; exit 1; }
+
+      # CLAUDE.md forbids a raw colour literal and nothing else in this gate
+      # reads a colour value. Sources, not public/: a stale stylesheet can be
+      # served out of resources/_gen/, so built CSS is not evidence.
+      - name: No raw colour literal in any stylesheet
+        run: python3 scripts/no-raw-colour.py assets/css/*.css
 
       # The policy pages are listed because the docs site's consent banner links
       # straight at them. A page that stops building takes that link down and
@@ -90,31 +109,61 @@ jobs:
       # A renamed section id leaves a link that still returns 200 and scrolls
       # nowhere. No status-code checker, --printPathWarnings or html-validate
       # rule sees it, and scroll-padding-top makes it look like it worked.
-      - name: Every in-page anchor resolves to an id
+      - name: Every fragment link resolves to an id, on every built page
+        run: python3 scripts/check-anchors.py public
+
+      # Goldmark derives a policy page's heading ids from its heading text, so a
+      # reworded heading silently renames an id and breaks every bookmark and
+      # table-of-contents entry pointing at it.
+      - name: Heading ids and levels match the committed baseline
+        run: python3 scripts/check-heading-ids.py --check
+
+      # `/`'s lastmod is hand-maintained, because the page's copy lives in
+      # layouts/home.html and `:git` never reads it. Changed <main> text must
+      # come with a strictly later resolved sitemap lastmod.
+      #
+      # Compares text, not changed paths, so a CSS or class-only edit cannot
+      # demand a bump. A date going backwards with no text change is a separate
+      # defect and deliberately out of scope here.
+      #
+      # pull_request only: main is reached through a PR, which ran this same
+      # check against its base, and a push has no base ref to compare against.
+      - name: Home-page lastmod moves when the home page's text does
+        if: github.event_name == 'pull_request'
         run: |
-          python3 - <<'PY'
-          import re, sys
-          html = open('public/index.html', encoding='utf-8').read()
-          ids = set(re.findall(r'\bid="([^"]+)"', html))
-          anchors = set()
-          for href in re.findall(r'\bhref="([^"]+)"', html):
-              if href.startswith('#'):
-                  anchors.add(href[1:])
-              elif href.startswith('/#'):
-                  anchors.add(href[2:])
-          if not anchors:
-              sys.exit('::error::no in-page anchors found — the check cannot fail')
-          dead = sorted(a for a in anchors if a and a not in ids)
-          if dead:
-              sys.exit('::error::anchor with no matching id: %s' % ', '.join(dead))
-          print('anchors OK: %d fragment links over %d ids' % (len(anchors), len(ids)))
-          PY
+          python3 scripts/check-home-lastmod.py \
+            "${{ github.event.pull_request.base.sha }}"
+
       - name: Validate HTML
-        # Without .htmlvalidate.json, html-validate checks no rules and exits 0.
-        # These are globs, and it exits 0 while any one of them matches, so a
-        # missing page is skipped here. Existence is the step above's job.
+        # One invocation per file, list taken from the build: given several paths
+        # html-validate exits 0 while any one matches, and a hardcoded list
+        # leaves a new page unvalidated. Absence is the existence step's job.
+        #
+        # `extends` carries three presets. `heading-level` and
+        # `no-missing-references` come from :document, not :a11y. :a11y is a
+        # subset of :recommended today and is listed so a version bump cannot
+        # drop those rules without a diff here. This note lives here because
+        # html-validate parses .htmlvalidate.json as strict JSON and dies on a
+        # `//` comment; do not move it back into the config.
         run: |
+          hv=node_modules/.bin/html-validate
+          test -x "$hv" \
+            || { echo "::error::$hv missing — npm ci did not run"; exit 1; }
           test -f .htmlvalidate.json \
             || { echo "::error::.htmlvalidate.json missing — html-validate would silently pass"; exit 1; }
-          npx --yes html-validate public/index.html public/404.html \
-            public/privacy/index.html public/cookies/index.html
+          # html-validate resolves its config from the target file's directory,
+          # not the cwd. Assert a rule only this repo's `extends` pulls in, or a
+          # silent fallback to defaults would check every page against the wrong
+          # rule set and still exit 0.
+          "$hv" --print-config public/index.html | grep -q '"heading-level"' \
+            || { echo "::error::.htmlvalidate.json is not in force for public/"; exit 1; }
+          pages="$(mktemp)"
+          find public -name '*.html' | sort > "$pages"
+          test -s "$pages" \
+            || { echo "::error::no built HTML found — the check cannot fail"; exit 1; }
+          fail=0
+          while IFS= read -r page; do
+            "$hv" "$page" || fail=1
+          done < "$pages"
+          rm -f "$pages"
+          exit $fail

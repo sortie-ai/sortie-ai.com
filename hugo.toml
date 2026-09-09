@@ -44,7 +44,10 @@ changefreq = ""
 priority = -1
 
 [frontmatter]
-lastmod = [":git", "lastmod", ":default"]
+# `lastmod` ahead of `:git` so a page can carry an explicit date: the home
+# page's copy lives in layouts/home.html, which `:git` never reads. A page with
+# no `lastmod` key still resolves through `:git` and stays maintenance-free.
+lastmod = ["lastmod", ":git", ":default"]
 
 [markup.goldmark.renderer]
 # For inline HTML in the legal pages' Markdown.
