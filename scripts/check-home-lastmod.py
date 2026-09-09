@@ -1,25 +1,8 @@
 #!/usr/bin/env python3
 """Fail when the home page's text changed but its sitemap lastmod did not advance.
 
-`/`'s lastmod is hand-maintained in content/_index.md front matter, because the
-page's copy lives in layouts/home.html and `:git` never reads that file. The
-comment on the key asks the next editor to bump it; this is what checks.
-
-Two deliberate choices. It compares the <main> text of a base ref's build
-against the head build rather than the set of changed paths, so a class rename
-or a CSS edit, which changes no indexable text, cannot demand a date bump and
-make the sitemap claim a freshness that did not happen. And it reads the
-resolved <lastmod> out of both sitemaps rather than the front-matter key, which
-is the artifact crawlers actually read and which a page without the key still
-resolves through `:git`.
-
-Out of scope, and its own defect: a date moving backwards with no text change.
-This guard answers "did a rewrite announce itself", nothing wider.
-
---no-future asserts only that the key is not a future date, which needs no
-build and no base ref. Hugo's `date` descriptor falls back to `lastmod`, so a
-future value also sets .Date and the page silently leaves the build; it must be
-read from front matter, because by then there is no sitemap entry left to read.
+lastmod is hand-maintained in content/_index.md front matter, because the
+page's copy lives in layouts/home.html and `:git` never reads that file.
 
     python3 scripts/check-home-lastmod.py --no-future
     python3 scripts/check-home-lastmod.py <base-sha> [head-build-dir]
@@ -43,7 +26,8 @@ SKIP = {"script", "style", "template"}
 
 
 class MainText(HTMLParser):
-    """Collects text inside <main>, which is the page's indexable copy."""
+    """Collects the <main> text so a CSS-only or class-rename change, which
+    alters no indexable text, can't force a lastmod bump."""
 
     def __init__(self):
         super().__init__(convert_charrefs=True)
@@ -78,7 +62,9 @@ def main_text(path):
 
 
 def home_lastmod(path):
-    """The resolved <lastmod> for the site root, as an aware datetime."""
+    """Resolved <lastmod> for the site root, as an aware datetime — the
+    value crawlers see, and the only one that still exists when the
+    front-matter key is absent and `:git` fills it in."""
     for url in ET.parse(path).getroot().iter(SITEMAP_NS + "url"):
         loc = url.findtext(SITEMAP_NS + "loc") or ""
         if urlparse(loc).path in ("", "/"):
@@ -174,6 +160,7 @@ def main(argv):
 
     words = "%d -> %d words" % (len(base_text.split()), len(head_text.split()))
     if head_text == base_text:
+        # A lastmod moved backwards with no text change is out of scope here.
         print("ok: home-page text unchanged since %s (%d words), lastmod=%s"
               % (base[:12], len(head_text.split()), head_raw))
         return 0
