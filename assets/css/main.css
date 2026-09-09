@@ -1764,7 +1764,6 @@
   }
   .prose-head {
     grid-column: 1 / -1;
-    max-width: 68ch;
   }
   .prose-head h1 {
     font-family: var(--display);
@@ -1774,7 +1773,10 @@
     margin: 16px 0 0;
     letter-spacing: -0.0143em;
   }
+  /* The head itself is uncapped (nothing sits beside it), but running
+     prose still needs a measure: the same 68ch .prose reads its body at. */
   .prose-head .lede {
+    max-width: 68ch;
     margin-top: 18px;
   }
 
