@@ -1,6 +1,6 @@
 # Sortie
 
-> {{ $site.Params.llmsDescription }}
+> {{ site.params.llmsDescription }}
 
 This is the project's landing page. The documentation site carries the full content index, and every page there is also available as clean Markdown via the `Accept: text/markdown` request header.
 
