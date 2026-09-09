@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Fail when a hex colour appears anywhere but a `--token: #hex;` declaration.
 
-CLAUDE.md forbids a raw colour literal in the stylesheet and nothing else in
-the build reads a colour value, so this is the only guard. Stylesheets arrive
-as arguments rather than hardcoded, so CI can hand over a glob and a second
-stylesheet is covered the day it lands.
+Nothing else in the build inspects colour, so this is the only guard
+against a literal that slips in and ships silently. Stylesheets arrive
+as arguments, not hardcoded, so a glob covers a new one the day it lands.
 
 Point it at assets/css sources, never public/: a local `hugo --gc --minify`
 can serve a stale stylesheet out of resources/_gen/, so built CSS is not
