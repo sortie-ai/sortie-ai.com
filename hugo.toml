@@ -74,7 +74,7 @@ github = "https://github.com/sortie-ai/sortie"
 org = "https://github.com/sortie-ai"
 
 # ogImage is shared with the docs site; update one copy without the other and the cards diverge.
-ogImage = "img/og-image.jpg"
+ogImage = "img/og-image.png"
 ogImageAlt = "Sortie - Turn tracker tickets into agent sessions"
 
 [params.author]
