@@ -72,6 +72,7 @@ llmsDescription = "Sortie is an autonomous coding agent orchestrator. It picks u
 docs = "https://docs.sortie-ai.com"
 github = "https://github.com/sortie-ai/sortie"
 org = "https://github.com/sortie-ai"
+discord = "https://discord.gg/MCNrc8Wf9M"
 
 # ogImage is shared with the docs site; update one copy without the other and the cards diverge.
 ogImage = "img/og-image.png"
@@ -142,6 +143,10 @@ weight = 20
 name = "Discussions"
 url = "https://github.com/sortie-ai/sortie/discussions"
 weight = 40
+[[menus.project]]
+name = "Discord"
+url = "https://discord.gg/MCNrc8Wf9M"
+weight = 45
 [[menus.project]]
 name = "License"
 url = "https://github.com/sortie-ai/sortie/blob/main/LICENSE"
