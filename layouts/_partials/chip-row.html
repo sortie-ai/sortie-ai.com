@@ -1,8 +1,10 @@
+{{- /* Not "ad-": EasyList hides .ad-row, .ad-title and .ad-line, which emptied
+   this whole section for anyone running an ad blocker (sortie-ai/sortie#1261). */}}
 {{- $g := .group }}
-<div class="ad-row{{ if eq $g.id "review" }} ok{{ end }}">
-  <h3 class="ad-title" id="ad-{{ $g.id }}">{{ $g.title }}</h3>
-  <div class="ad-line">
-    <ul class="chips" aria-labelledby="ad-{{ $g.id }}">
+<div class="stack-row{{ if eq $g.id "review" }} ok{{ end }}">
+  <h3 class="stack-title" id="stack-{{ $g.id }}">{{ $g.title }}</h3>
+  <div class="stack-line">
+    <ul class="chips" aria-labelledby="stack-{{ $g.id }}">
       {{- range $g.items }}
       <li>
         {{- if .href }}
