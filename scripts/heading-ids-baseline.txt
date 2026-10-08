@@ -22,9 +22,9 @@ cookies/index.html	h2	foot-legal
 index.html	h1	h-hero
 index.html	h2	h-how
 index.html	h2	h-adapters
-index.html	h3	ad-trackers
-index.html	h3	ad-agents
-index.html	h3	ad-review
+index.html	h3	stack-trackers
+index.html	h3	stack-agents
+index.html	h3	stack-review
 index.html	h2	h-workflow
 index.html	h2	h-operate
 index.html	h2	h-scope
