@@ -117,9 +117,9 @@
   }
   body {
     margin: 0;
-    /* Containing block for the two full-bleed background layers in @layer
-       layout. Without it they resolve against the initial containing block
-       and stop at the viewport height. */
+    /* Containing block for the full-bleed column grid in @layer layout.
+       Without it the grid resolves against the initial containing block and
+       stops at the viewport height. */
     position: relative;
     background: var(--bg);
     color: var(--ink);
@@ -197,8 +197,8 @@
   }
 
   /* On a sibling of the content, never a <body> pseudo-element: an ancestor
-     pseudo makes axe abandon color-contrast page-wide. Unpositioned, so both
-     layers size against <body>; ::after puts the grid over the wash. */
+     pseudo makes axe abandon color-contrast page-wide. Unpositioned, so the
+     grid sizes against <body>; ::after puts the grid over the wash. */
   .washes::before,
   .washes.vgrid::after {
     content: "";
@@ -212,16 +212,21 @@
   /* Sized in vw so the field is the same figure at every width. Pinning it to
      1440 leaves flat fill beyond the shape on a wide screen. */
   .washes::before {
+    /* Pinned so the glows stay in view while the page scrolls. lvh, not vh:
+       a mobile toolbar that retracts would otherwise open a strip under it. */
+    position: fixed;
     top: 0;
-    height: 100vw;
+    height: 100lvh;
     background:
       radial-gradient(
         34vw 48vw at 100% 0%,
         color-mix(in srgb, var(--ok) 19%, transparent) 0%,
         transparent 70%
       ),
+      /* 57vw, not 57%: the center sat at 57% of a 100vw-tall layer, and
+         keeping that figure keeps the first screen unchanged. */
       radial-gradient(
-        43vw 36vw at 0% 57%,
+        43vw 36vw at 0% 57vw,
         color-mix(in srgb, var(--accent) 26%, transparent) 0%,
         transparent 100%
       );
@@ -1637,6 +1642,9 @@
        both land where the mockup puts them. Total block size is unchanged. */
     padding-block: 118px 20px;
     background: var(--bg);
+    /* Lifts the plate over the pinned glow: --ink-faint headings fall from
+       4.77:1 to 3.1:1 where it shows through. */
+    position: relative;
   }
   .foot {
     display: grid;
